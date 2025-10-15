@@ -5,13 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Droplets, LogOut, FileText, Clock, MapPin, Camera, Upload, X, Loader2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
-import { LogOut, Droplets, FileText, Clock, MapPin, Camera, Upload, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
-import CameraCapture from "@/components/CameraCapture";
 import MapView from "@/components/MapView";
+import CameraCapture from "@/components/CameraCapture";
+import { API_URL } from "@/lib/api";
 
 interface PipeReport {
   id: string;
@@ -102,7 +100,7 @@ const ResidentDashboard = () => {
         return;
       }
       
-      const response = await fetch('http://localhost:3001/api/reports', {
+      const response = await fetch(`${API_URL}/api/reports', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -127,7 +125,7 @@ const ResidentDashboard = () => {
     setIsLoadingSchedules(true);
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch('http://localhost:3001/api/schedules/today', {
+      const response = await fetch(`${API_URL}/api/schedules/today`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -546,7 +544,7 @@ const ResidentDashboard = () => {
         has_photo: !!formData.photo
       });
 
-      const response = await fetch('http://localhost:3001/api/reports', {
+      const response = await fetch(`${API_URL}/api/reports', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

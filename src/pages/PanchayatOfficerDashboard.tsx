@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Droplets, LogOut, FileText, Users, Clock, MapPin, Plus, Loader2, AlertCircle, CheckCircle2, Settings, Calendar, Shield, UserPlus } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MapView from "@/components/MapView";
+import { API_URL } from "@/lib/api";
 
 interface PipeReport {
   id: string;
@@ -125,7 +126,7 @@ const PanchayatOfficerDashboard = () => {
       const token = localStorage.getItem('auth_token');
       if (!token) return;
       
-      const response = await fetch('http://localhost:3001/api/reports/all', {
+      const response = await fetch(`${API_URL}/api/reports/all`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -154,7 +155,7 @@ const PanchayatOfficerDashboard = () => {
       
       // Note: We'll need to add a users endpoint to the backend
       // For now, we'll extract technicians from reports or use a placeholder
-      const response = await fetch('http://localhost:3001/api/users', {
+      const response = await fetch(`${API_URL}/api/users`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -192,7 +193,7 @@ const PanchayatOfficerDashboard = () => {
     setIsLoadingSchedules(true);
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch('http://localhost:3001/api/schedules/all', {
+      const response = await fetch(`${API_URL}/api/schedules/all`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -218,7 +219,7 @@ const PanchayatOfficerDashboard = () => {
       const token = localStorage.getItem('auth_token');
       if (!token) return;
       
-      const response = await fetch(`http://localhost:3001/api/reports/${reportId}/assign`, {
+      const response = await fetch(`${API_URL}/api/reports/${reportId}/assign`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -251,7 +252,7 @@ const PanchayatOfficerDashboard = () => {
       const token = localStorage.getItem('auth_token');
       if (!token) return;
       
-      const response = await fetch(`http://localhost:3001/api/reports/${reportId}/status`, {
+      const response = await fetch(`${API_URL}/api/reports/${reportId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -309,7 +310,7 @@ const PanchayatOfficerDashboard = () => {
       
       console.log('Creating staff with data:', requestData);
       
-      const response = await fetch('http://localhost:3001/api/users/create-staff', {
+      const response = await fetch(`${API_URL}/api/users/create-staff`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -369,7 +370,7 @@ const PanchayatOfficerDashboard = () => {
       const token = localStorage.getItem('auth_token');
       if (!token) return;
       
-      const response = await fetch(`http://localhost:3001/api/reports/${reportId}/approve`, {
+      const response = await fetch(`${API_URL}/api/reports/${reportId}/approve`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -402,7 +403,7 @@ const PanchayatOfficerDashboard = () => {
       const token = localStorage.getItem('auth_token');
       if (!token) return;
       
-      const response = await fetch(`http://localhost:3001/api/reports/${reportId}/approve`, {
+      const response = await fetch(`${API_URL}/api/reports/${reportId}/approve`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -689,10 +690,10 @@ const PanchayatOfficerDashboard = () => {
                           {report.photo_url && (
                             <div className="ml-4">
                               <img 
-                                src={`http://localhost:3001${report.photo_url}`} 
+                                src={`${API_URL}${report.photo_url}`} 
                                 alt="Damage photo" 
                                 className="w-20 h-20 object-cover rounded border cursor-pointer hover:opacity-75"
-                                onClick={() => window.open(`http://localhost:3001${report.photo_url}`, '_blank')}
+                                onClick={() => window.open(`${API_URL}${report.photo_url}`, '_blank')}
                               />
                             </div>
                           )}

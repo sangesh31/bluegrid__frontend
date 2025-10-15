@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Droplets, LogOut, Clock, Play, Square, AlertTriangle, Calendar, MapPin } from "lucide-react";
+import { API_URL } from "@/lib/api";
 
 interface WaterSchedule {
   id: string;
@@ -67,7 +68,7 @@ const WaterFlowControllerDashboard = () => {
       const token = localStorage.getItem('auth_token');
       if (!token) return;
       
-      const response = await fetch('http://localhost:3001/api/schedules/my-schedules', {
+      const response = await fetch(`${API_URL}/api/schedules/my-schedules`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -91,7 +92,7 @@ const WaterFlowControllerDashboard = () => {
       const token = localStorage.getItem('auth_token');
       if (!token) return;
       
-      const response = await fetch('http://localhost:3001/api/users/residents', {
+      const response = await fetch(`${API_URL}/api/users/residents`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -122,7 +123,7 @@ const WaterFlowControllerDashboard = () => {
       const token = localStorage.getItem('auth_token');
       if (!token) return;
       
-      const response = await fetch('http://localhost:3001/api/schedules/create', {
+      const response = await fetch(`${API_URL}/api/schedules/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -136,7 +137,12 @@ const WaterFlowControllerDashboard = () => {
           title: "Schedule created",
           description: "Water supply schedule has been created successfully.",
         });
-        setNewSchedule({ area: '', scheduled_open_time: '', scheduled_close_time: '' });
+        setNewSchedule({
+          area: '',
+          user_id: '',
+          scheduled_open_time: '',
+          scheduled_close_time: ''
+        });
         fetchSchedules();
       } else {
         const errorData = await response.json();
@@ -160,7 +166,7 @@ const WaterFlowControllerDashboard = () => {
       const token = localStorage.getItem('auth_token');
       if (!token) return;
       
-      const response = await fetch(`http://localhost:3001/api/schedules/${scheduleId}/open`, {
+      const response = await fetch(`${API_URL}/api/schedules/${scheduleId}/open`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -195,7 +201,7 @@ const WaterFlowControllerDashboard = () => {
       const token = localStorage.getItem('auth_token');
       if (!token) return;
       
-      const response = await fetch(`http://localhost:3001/api/schedules/${scheduleId}/close`, {
+      const response = await fetch(`${API_URL}/api/schedules/${scheduleId}/close`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -239,7 +245,7 @@ const WaterFlowControllerDashboard = () => {
       const token = localStorage.getItem('auth_token');
       if (!token) return;
       
-      const response = await fetch(`http://localhost:3001/api/schedules/${scheduleId}/interrupt`, {
+      const response = await fetch(`${API_URL}/api/schedules/${scheduleId}/interrupt`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

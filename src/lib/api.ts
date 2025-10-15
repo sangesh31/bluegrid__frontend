@@ -1,6 +1,9 @@
 // API client for backend communication
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
+// Export API_URL for use in other components
+export { API_URL };
+
 export interface User {
   id: string;
   email: string;
