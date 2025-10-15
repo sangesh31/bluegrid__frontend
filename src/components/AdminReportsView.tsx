@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { API_URL } from "@/lib/api";
 import { FileText, MapPin } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -63,7 +64,7 @@ const AdminReportsView = () => {
     if (!token) return;
     
     try {
-      const response = await fetch('http://localhost:3001/api/admin/reports', {
+      const response = await fetch(`${API_URL}/api/admin/reports`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -92,7 +93,7 @@ const AdminReportsView = () => {
     if (!token) return;
     
     try {
-      const response = await fetch('http://localhost:3001/api/admin/plumbers', {
+      const response = await fetch(`${API_URL}/api/admin/plumbers`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -121,7 +122,7 @@ const AdminReportsView = () => {
     if (!token) return;
     
     try {
-      const response = await fetch(`http://localhost:3001/api/admin/reports/${reportId}/assign`, {
+      const response = await fetch(`${API_URL}/api/admin/reports/${reportId}/assign`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -156,7 +157,7 @@ const AdminReportsView = () => {
     if (!token) return;
     
     try {
-      const response = await fetch(`http://localhost:3001/api/admin/reports/${reportId}/status`, {
+      const response = await fetch(`${API_URL}/api/admin/reports/${reportId}/status`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

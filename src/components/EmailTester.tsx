@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { useToast } from "@/hooks/use-toast";
+import { Mail, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { API_URL } from "@/lib/api";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -22,7 +25,7 @@ const EmailTester = () => {
   const handleVerifyConnection = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3001/api/email/verify', {
+      const response = await fetch(`${API_URL}/api/email/verify`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${getAuthToken()}`
@@ -52,7 +55,7 @@ const EmailTester = () => {
 
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3001/api/email/test', {
+      const response = await fetch(`${API_URL}/api/email/test`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -84,7 +87,7 @@ const EmailTester = () => {
 
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3001/api/email/send', {
+      const response = await fetch(`${API_URL}/api/email/send`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
