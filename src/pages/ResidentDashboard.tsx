@@ -100,7 +100,7 @@ const ResidentDashboard = () => {
         return;
       }
       
-      const response = await fetch(`${API_URL}/api/reports', {
+      const response = await fetch(`${API_URL}/api/reports`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -544,7 +544,7 @@ const ResidentDashboard = () => {
         has_photo: !!formData.photo
       });
 
-      const response = await fetch(`${API_URL}/api/reports', {
+      const response = await fetch(`${API_URL}/api/reports`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

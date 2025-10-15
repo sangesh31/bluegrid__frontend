@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Wrench, LogOut, FileText, Clock, MapPin, CheckCircle2, AlertCircle, Upload } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { API_URL } from "@/lib/api";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -69,7 +70,7 @@ const MaintenanceTechnicianDashboard = () => {
       const token = localStorage.getItem('auth_token');
       if (!token) return;
       
-      const response = await fetch('http://localhost:3001/api/reports/assigned', {
+      const response = await fetch(`${API_URL}/api/reports/assigned`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -90,7 +91,7 @@ const MaintenanceTechnicianDashboard = () => {
       const token = localStorage.getItem('auth_token');
       if (!token) return;
       
-      const response = await fetch(`http://localhost:3001/api/reports/${reportId}/accept`, {
+      const response = await fetch(`${API_URL}/api/reports/${reportId}/accept`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -140,7 +141,7 @@ const MaintenanceTechnicianDashboard = () => {
         formData.append('completion_image', completionImage);
       }
       
-      const response = await fetch(`http://localhost:3001/api/reports/${selectedReport.id}/complete`, {
+      const response = await fetch(`${API_URL}/api/reports/${selectedReport.id}/complete`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
