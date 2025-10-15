@@ -3,14 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Wrench, LogOut, FileText, Clock, MapPin, CheckCircle2, AlertCircle, Upload } from "lucide-react";
+import { Wrench, LogOut, FileText, Clock, MapPin, CheckCircle2, AlertCircle, Upload, Settings, Camera, Eye } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { API_URL } from "@/lib/api";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, LogOut, Clock, CheckCircle, AlertCircle, MapPin, Camera, Upload, Eye, FileText } from "lucide-react";
 import CameraCapture from "@/components/CameraCapture";
 import MapView from "@/components/MapView";
 
@@ -310,7 +310,7 @@ const MaintenanceTechnicianDashboard = () => {
                 <p className="text-xs text-green-600 font-medium">✓ Well done!</p>
               </div>
               <div className="p-3 bg-green-100 rounded-xl">
-                <CheckCircle className="w-8 h-8 text-green-600" />
+                <CheckCircle2 className="w-8 h-8 text-green-600" />
               </div>
             </div>
           </div>
@@ -328,7 +328,7 @@ const MaintenanceTechnicianDashboard = () => {
                 In Progress ({inProgressReports.length})
               </TabsTrigger>
               <TabsTrigger value="completed" className="nav-tab data-[state=active]:shadow-medium">
-                <CheckCircle className="w-4 h-4 mr-2" />
+                <CheckCircle2 className="w-4 h-4 mr-2" />
                 Completed ({completedReports.length})
               </TabsTrigger>
             </TabsList>
@@ -381,7 +381,7 @@ const MaintenanceTechnicianDashboard = () => {
                           className="bg-green-600 hover:bg-green-700"
                           size="sm"
                         >
-                          <CheckCircle className="w-4 h-4 mr-2" />
+                          <CheckCircle2 className="w-4 h-4 mr-2" />
                           Accept Task
                         </Button>
                       </div>
@@ -449,7 +449,7 @@ const MaintenanceTechnicianDashboard = () => {
                           className="bg-blue-600 hover:bg-blue-700"
                           size="sm"
                         >
-                          <CheckCircle className="w-4 h-4 mr-2" />
+                          <CheckCircle2 className="w-4 h-4 mr-2" />
                           Mark Complete
                         </Button>
                       </div>
@@ -519,7 +519,7 @@ const MaintenanceTechnicianDashboard = () => {
             ) : (
               <Card>
                 <CardContent className="p-8 text-center">
-                  <CheckCircle className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                  <CheckCircle2 className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
                   <p className="text-muted-foreground">No completed tasks</p>
                 </CardContent>
               </Card>
@@ -533,7 +533,7 @@ const MaintenanceTechnicianDashboard = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
               <h3 className="text-lg font-semibold mb-4">
-                <CheckCircle className="w-5 h-5 inline mr-2 text-green-600" />
+                <CheckCircle2 className="w-5 h-5 inline mr-2 text-green-600" />
                 Complete Task
               </h3>
               <div className="space-y-4">
