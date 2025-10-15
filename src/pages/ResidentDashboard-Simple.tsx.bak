@@ -1,0 +1,146 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { LogOut, Droplets } from "lucide-react";
+
+const ResidentDashboard = () => {
+  const { user, profile, signOut, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/auth");
+    }
+  }, [user, loading, navigate]);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigate("/auth");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!user || !profile) {
+    return null;
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-hero">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center">
+              <Droplets className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold">BlueGrid Dashboard</h1>
+              <p className="text-sm text-muted-foreground">Welcome, {profile.full_name}</p>
+            </div>
+          </div>
+          <Button variant="outline" onClick={handleSignOut}>
+            <LogOut className="w-4 h-4 mr-2" />
+            Sign Out
+          </Button>
+        </div>
+
+        {/* Main Content */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <Card>
+            <CardHeader>
+              <CardTitle>User Information</CardTitle>
+              <CardDescription>Your account details</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div>
+                  <p className="text-sm font-medium">Name</p>
+                  <p className="text-sm text-muted-foreground">{profile.full_name}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Email</p>
+                  <p className="text-sm text-muted-foreground">{user.email}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Role</p>
+                  <p className="text-sm text-muted-foreground capitalize">{profile.role}</p>
+                </div>
+                {profile.phone && (
+                  <div>
+                    <p className="text-sm font-medium">Phone</p>
+                    <p className="text-sm text-muted-foreground">{profile.phone}</p>
+                  </div>
+                )}
+                {profile.address && (
+                  <div>
+                    <p className="text-sm font-medium">Address</p>
+                    <p className="text-sm text-muted-foreground">{profile.address}</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Report Pipe Damage</CardTitle>
+              <CardDescription>Report water pipe issues in your area</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Feature coming soon. You'll be able to report pipe damages with photos and location.
+              </p>
+              <Button disabled className="w-full">Report Damage</Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Water Schedule</CardTitle>
+              <CardDescription>View water supply timings</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Feature coming soon. Check your area's water supply schedule here.
+              </p>
+              <Button disabled className="w-full">View Schedule</Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Info Card */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Welcome to BlueGrid</CardTitle>
+            <CardDescription>Smart Water Management System</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              This dashboard is currently under development. More features will be added soon including:
+            </p>
+            <ul className="list-disc list-inside mt-2 text-sm text-muted-foreground space-y-1">
+              <li>Report pipe damages with photos and GPS location</li>
+              <li>View water supply schedules for your area</li>
+              <li>Track your reported issues</li>
+              <li>Receive notifications about water supply changes</li>
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default ResidentDashboard;

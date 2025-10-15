@@ -1,0 +1,182 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { Droplets, LogOut, Wrench } from "lucide-react";
+import PlumberTasksView from "@/components/PlumberTasksView";
+
+const PlumberDashboard = () => {
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const checkUser = async () => {
+      setLoading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate("/auth");
+        setLoading(false);
+        return;
+      }
+
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      // If profile doesn't exist, try to create it
+      if (profileError || !profileData) {
+        console.log("Profile not found, attempting to create one...");
+        
+        // Try to get user metadata
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        if (userError) {
+          console.error("Error getting user data:", userError);
+        } else {
+          // Create profile with default values
+          const { data: newProfile, error: createError } = await supabase
+            .from('profiles')
+            .insert({
+              id: user.id,
+              full_name: userData?.user?.user_metadata?.full_name || 'Plumber User',
+              role: 'plumber'
+            })
+            .select()
+            .single();
+
+          if (createError) {
+            console.error("Error creating profile:", createError);
+            toast({
+              title: "Profile error",
+              description: "Could not create user profile. Please contact support.",
+              variant: "destructive",
+            });
+            navigate("/auth");
+            setLoading(false);
+            return;
+          } else {
+            console.log("Profile created successfully:", newProfile);
+            
+            // Check if user has plumber role
+            if (newProfile?.role !== 'plumber') {
+              toast({
+                title: "Access denied",
+                description: "You don't have plumber privileges",
+                variant: "destructive",
+              });
+              navigate("/dashboard");
+              setLoading(false);
+              return;
+            }
+            
+            setUser(user);
+            setProfile(newProfile);
+            setLoading(false);
+            return;
+          }
+        }
+      }
+
+      if (profileData?.role !== 'plumber') {
+        toast({
+          title: "Access denied",
+          description: "You don't have plumber privileges",
+          variant: "destructive",
+        });
+        navigate("/dashboard");
+        setLoading(false);
+        return;
+      }
+
+      setUser(user);
+      setProfile(profileData);
+      setLoading(false);
+    };
+
+    checkUser();
+  }, [navigate, toast]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: "Logged out",
+      description: "See you soon!",
+    });
+    navigate("/");
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-hero flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-lg">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-hero flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg">Redirecting to login...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-gradient-hero flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg">Profile not found. Please contact support.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-hero">
+      <header className="bg-card border-b shadow-sm">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center">
+              <Wrench className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold">BlueGrid Plumber</h1>
+              <p className="text-sm text-muted-foreground">Welcome, {profile.full_name}</p>
+            </div>
+          </div>
+          <Button variant="outline" onClick={handleLogout}>
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
+          </Button>
+        </div>
+      </header>
+
+      <main className="container mx-auto px-4 py-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>My Assigned Tasks</CardTitle>
+            <CardDescription>
+              Manage your pipe repair assignments
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <PlumberTasksView plumberId={user.id} />
+          </CardContent>
+        </Card>
+      </main>
+    </div>
+  );
+};
+
+export default PlumberDashboard;

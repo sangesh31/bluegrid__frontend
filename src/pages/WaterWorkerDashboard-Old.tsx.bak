@@ -1,0 +1,89 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Droplets, LogOut, Clock } from "lucide-react";
+
+const WaterWorkerDashboard = () => {
+  const { user, profile, signOut, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && (!user || profile?.role !== 'water_worker')) {
+      navigate("/auth");
+    }
+  }, [user, profile, loading, navigate]);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigate("/auth");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!user || !profile || profile.role !== 'water_worker') {
+    return null;
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-hero">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center">
+              <Droplets className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold">Water Worker Dashboard</h1>
+              <p className="text-sm text-muted-foreground">Welcome, {profile.full_name}</p>
+            </div>
+          </div>
+          <Button variant="outline" onClick={handleSignOut}>
+            <LogOut className="w-4 h-4 mr-2" />
+            Sign Out
+          </Button>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Water Supply Schedule</CardTitle>
+              <CardDescription>Manage water supply timings</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Schedule management features coming soon. You'll be able to update water supply schedules and notify users of changes.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Today's Schedule</CardTitle>
+              <CardDescription>Current water supply status</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-2 text-sm">
+                <Clock className="w-4 h-4" />
+                <span className="text-muted-foreground">No active schedule</span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default WaterWorkerDashboard;
