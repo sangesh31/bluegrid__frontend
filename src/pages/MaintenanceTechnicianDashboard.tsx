@@ -342,11 +342,23 @@ const MaintenanceTechnicianDashboard = () => {
                         <h3 className="font-semibold">Pipe Damage Report</h3>
                         {getStatusBadge(report.status)}
                       </div>
-                      <div className="space-y-1 text-sm text-muted-foreground">
-                        <p><strong>Reporter:</strong> {report.full_name}</p>
-                        <p><strong>Location:</strong> {report.address}</p>
-                        <p><strong>Reported:</strong> {formatDate(report.created_at)}</p>
-                        {report.notes && <p><strong>Notes:</strong> {report.notes}</p>}
+                      <div className="flex gap-3">
+                        <div className="flex-1 space-y-1 text-sm text-muted-foreground">
+                          <p><strong>Reporter:</strong> {report.full_name}</p>
+                          <p><strong>Location:</strong> {report.address}</p>
+                          <p><strong>Reported:</strong> {formatDate(report.created_at)}</p>
+                          {report.notes && <p><strong>Notes:</strong> {report.notes}</p>}
+                        </div>
+                        {report.photo_url && (
+                          <div className="flex-shrink-0">
+                            <img 
+                              src={`${API_URL}${report.photo_url}`} 
+                              alt="Damage photo" 
+                              className="w-20 h-20 object-cover rounded border cursor-pointer hover:opacity-75"
+                              onClick={() => setShowImageDialog(report.photo_url!)}
+                            />
+                          </div>
+                        )}
                       </div>
                       <div className="flex flex-wrap gap-2 pt-2">
                         {report.location_lat && report.location_lng && (
@@ -407,11 +419,23 @@ const MaintenanceTechnicianDashboard = () => {
                         <h3 className="font-semibold">Pipe Damage Report</h3>
                         {getStatusBadge(report.status)}
                       </div>
-                      <div className="space-y-1 text-sm text-muted-foreground">
-                        <p><strong>Reporter:</strong> {report.full_name}</p>
-                        <p><strong>Location:</strong> {report.address}</p>
-                        <p><strong>Started:</strong> {formatDate(report.updated_at)}</p>
-                        {report.notes && <p><strong>Notes:</strong> {report.notes}</p>}
+                      <div className="flex gap-3">
+                        <div className="flex-1 space-y-1 text-sm text-muted-foreground">
+                          <p><strong>Reporter:</strong> {report.full_name}</p>
+                          <p><strong>Location:</strong> {report.address}</p>
+                          <p><strong>Started:</strong> {formatDate(report.updated_at)}</p>
+                          {report.notes && <p><strong>Notes:</strong> {report.notes}</p>}
+                        </div>
+                        {report.photo_url && (
+                          <div className="flex-shrink-0">
+                            <img 
+                              src={`${API_URL}${report.photo_url}`} 
+                              alt="Damage photo" 
+                              className="w-20 h-20 object-cover rounded border cursor-pointer hover:opacity-75"
+                              onClick={() => setShowImageDialog(report.photo_url!)}
+                            />
+                          </div>
+                        )}
                       </div>
                       <div className="flex flex-wrap gap-2 pt-2">
                         {report.location_lat && report.location_lng && (
@@ -477,12 +501,24 @@ const MaintenanceTechnicianDashboard = () => {
                         <h3 className="font-semibold">Pipe Damage Report</h3>
                         {getStatusBadge(report.status)}
                       </div>
-                      <div className="space-y-1 text-sm text-muted-foreground">
-                        <p><strong>Reporter:</strong> {report.full_name}</p>
-                        <p><strong>Location:</strong> {report.address}</p>
-                        <p><strong>Completed:</strong> {report.completed_at ? formatDate(report.completed_at) : 'N/A'}</p>
-                        {report.completion_notes && <p><strong>Completion Notes:</strong> {report.completion_notes}</p>}
-                        {report.rejection_reason && <p><strong>Rejection Reason:</strong> {report.rejection_reason}</p>}
+                      <div className="flex gap-3">
+                        <div className="flex-1 space-y-1 text-sm text-muted-foreground">
+                          <p><strong>Reporter:</strong> {report.full_name}</p>
+                          <p><strong>Location:</strong> {report.address}</p>
+                          <p><strong>Completed:</strong> {report.completed_at ? formatDate(report.completed_at) : 'N/A'}</p>
+                          {report.completion_notes && <p><strong>Completion Notes:</strong> {report.completion_notes}</p>}
+                          {report.rejection_reason && <p><strong>Rejection Reason:</strong> {report.rejection_reason}</p>}
+                        </div>
+                        {report.photo_url && (
+                          <div className="flex-shrink-0">
+                            <img 
+                              src={`${API_URL}${report.photo_url}`} 
+                              alt="Damage photo" 
+                              className="w-20 h-20 object-cover rounded border cursor-pointer hover:opacity-75"
+                              onClick={() => setShowImageDialog(report.photo_url!)}
+                            />
+                          </div>
+                        )}
                       </div>
                       <div className="flex flex-wrap gap-2 pt-2">
                         {report.location_lat && report.location_lng && (
@@ -637,7 +673,7 @@ const MaintenanceTechnicianDashboard = () => {
                 </Button>
               </div>
               <img 
-                src={showImageDialog} 
+                src={showImageDialog.startsWith('http') ? showImageDialog : `${API_URL}${showImageDialog}`} 
                 alt="Pipe damage" 
                 className="max-w-full h-auto rounded-lg"
               />

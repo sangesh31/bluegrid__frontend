@@ -471,8 +471,112 @@ const ResidentDashboard = () => {
     }
   };
 
-  // Alias for backward compatibility
-  const getLocation = getUltraPreciseGPSLocation;
+  // Simple GPS fallback for quick location
+  const getSimpleGPSLocation = async () => {
+    if (!("geolocation" in navigator)) {
+      toast({
+        title: "GPS not supported",
+        description: "Your browser doesn't support geolocation.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (isGettingLocation) return;
+    
+    setIsGettingLocation(true);
+    setGpsDebugInfo('Getting GPS location...');
+    
+    try {
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+          resolve,
+          reject,
+          {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+          }
+        );
+      });
+
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      const accuracy = position.coords.accuracy;
+
+      console.log(`GPS Location: ${lat}, ${lng} (±${accuracy}m)`);
+
+      // Reverse geocode to get location name
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+        );
+        const data = await response.json();
+        const locationName = data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+
+        setFormData(prev => ({
+          ...prev,
+          location_lat: lat,
+          location_lng: lng,
+          location_name: locationName,
+        }));
+
+        setGpsDebugInfo(`GPS: ±${Math.round(accuracy)}m accuracy`);
+        setGpsQuality(accuracy <= 10 ? 'excellent' : accuracy <= 30 ? 'good' : 'fair');
+
+        toast({
+          title: "GPS location captured",
+          description: `${locationName} (±${Math.round(accuracy)}m)`,
+        });
+      } catch (geocodeError) {
+        // Fallback if reverse geocoding fails
+        const locationName = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+        setFormData(prev => ({
+          ...prev,
+          location_lat: lat,
+          location_lng: lng,
+          location_name: locationName,
+        }));
+
+        toast({
+          title: "GPS location captured",
+          description: `Coordinates: ${locationName}`,
+        });
+      }
+    } catch (error: any) {
+      let errorMessage = "Unable to get GPS location.";
+      
+      if (error.code) {
+        switch(error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = "Location access denied. Please enable location permissions in your browser settings.";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = "Location unavailable. Please check your device's location settings.";
+            break;
+          case error.TIMEOUT:
+            errorMessage = "Location request timed out. Please try again.";
+            break;
+          default:
+            errorMessage = `GPS error: ${error.message || 'Unknown error'}`;
+            break;
+        }
+      }
+      
+      console.error('GPS error:', error);
+      setGpsDebugInfo(`Error: ${errorMessage}`);
+      toast({
+        title: "GPS error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsGettingLocation(false);
+    }
+  };
+
+  // Use simple GPS by default, ultra-precise as option
+  const getLocation = getSimpleGPSLocation;
 
   const handleManualLocation = () => {
     if (manualLocation.trim()) {

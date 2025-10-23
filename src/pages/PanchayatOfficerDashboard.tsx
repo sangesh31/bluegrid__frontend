@@ -605,47 +605,81 @@ const PanchayatOfficerDashboard = () => {
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="max-w-5xl mx-auto space-y-4">
                     {reports.map((report) => (
-                      <div key={report.id} className="border rounded-lg p-4 space-y-4">
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <h4 className="font-semibold">{report.full_name}</h4>
-                              {getStatusBadge(report.status)}
+                      <div key={report.id} className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
+                        {/* Header Section with Professional Background */}
+                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b-2 border-blue-200 px-6 py-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <div className="bg-gradient-to-br from-blue-500 to-indigo-500 w-14 h-14 rounded-xl flex items-center justify-center shadow-md">
+                                <span className="text-2xl font-bold text-white">{report.full_name.charAt(0).toUpperCase()}</span>
+                              </div>
+                              <div>
+                                <h3 className="text-xl font-bold text-gray-800">{report.full_name}</h3>
+                                <p className="text-gray-600 text-sm font-medium">Report ID: #{report.id.slice(0, 8)}</p>
+                              </div>
                             </div>
-                            <p className="text-sm text-muted-foreground mb-2">{report.address}</p>
-                            {report.notes && (
-                              <p className="text-sm mb-2"><strong>Issue:</strong> {report.notes}</p>
-                            )}
-                            {report.location_lat && report.location_lng && (
-                              <div className="mb-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
+                            <div className="flex items-center gap-3">
+                              {getStatusBadge(report.status)}
+                              {report.photo_url && (
+                                <img 
+                                  src={`${API_URL}${report.photo_url}`} 
+                                  alt="Damage" 
+                                  className="w-16 h-16 object-cover rounded-xl border-2 border-blue-300 shadow-sm cursor-pointer hover:scale-105 hover:shadow-md transition-all"
+                                  onClick={() => window.open(`${API_URL}${report.photo_url}`, '_blank')}
+                                />
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Content Section */}
+                        <div className="px-6 py-5 space-y-4">
+                          {/* Location */}
+                          <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl">
+                            <div className="bg-blue-100 p-2 rounded-lg">
+                              <MapPin className="w-5 h-5 text-blue-600" />
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Location</p>
+                              <p className="text-sm font-medium text-gray-800">{report.address}</p>
+                              {report.location_lat && report.location_lng && (
+                                <button
                                   onClick={() => setSelectedLocation({
                                     lat: report.location_lat!,
                                     lng: report.location_lng!,
                                     address: report.address,
                                     userName: report.full_name
                                   })}
-                                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                  className="text-xs text-blue-600 hover:text-blue-700 font-medium mt-1 flex items-center gap-1"
                                 >
-                                  <MapPin className="w-4 h-4 mr-2" />
-                                  View Location on Map
-                                </Button>
-                                <p className="text-xs text-muted-foreground mt-1 ml-1">
-                                  {Number(report.location_lat).toFixed(4)}, {Number(report.location_lng).toFixed(4)}
-                                </p>
+                                  <MapPin className="w-3 h-3" />
+                                  View on Map ({Number(report.location_lat).toFixed(4)}, {Number(report.location_lng).toFixed(4)})
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                          {/* Issue Description */}
+                          {report.notes && (
+                            <div className="p-4 bg-gradient-to-r from-amber-50 to-orange-50 border-l-4 border-amber-500 rounded-xl">
+                              <p className="text-xs font-bold text-amber-900 uppercase tracking-wide mb-2">Reported Issue</p>
+                              <p className="text-sm text-gray-700 leading-relaxed">{report.notes}</p>
+                            </div>
+                          )}
+                          
+                          {/* Technician Assignment Info */}
+                          {report.assigned_technician_id && report.technician_name && (
+                            <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                              <div className="bg-blue-100 p-2 rounded-lg">
+                                <UserPlus className="w-5 h-5 text-blue-600" />
                               </div>
-                            )}
-                            
-                            {/* Technician Assignment Info */}
-                            {report.assigned_technician_id && report.technician_name && (
-                              <p className="text-sm text-blue-600 mb-2">
-                                <strong>Assigned to:</strong> {report.technician_name}
-                              </p>
-                            )}
+                              <div>
+                                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Assigned Technician</p>
+                                <p className="text-sm font-bold text-blue-900">{report.technician_name}</p>
+                              </div>
+                            </div>
+                          )}
                             
                             {/* Completion Notes */}
                             {report.completion_notes && (
@@ -683,38 +717,27 @@ const PanchayatOfficerDashboard = () => {
                               </div>
                             )}
                             
-                            <p className="text-xs text-muted-foreground">
-                              Submitted on {formatDate(report.created_at)}
-                            </p>
-                          </div>
-                          {report.photo_url && (
-                            <div className="ml-4">
-                              <img 
-                                src={`${API_URL}${report.photo_url}`} 
-                                alt="Damage photo" 
-                                className="w-20 h-20 object-cover rounded border cursor-pointer hover:opacity-75"
-                                onClick={() => window.open(`${API_URL}${report.photo_url}`, '_blank')}
-                              />
-                            </div>
-                          )}
-                        </div>
+                          <p className="text-xs text-gray-400 mt-4">
+                            Submitted on {formatDate(report.created_at)}
+                          </p>
 
-                        <div className="flex gap-2 flex-wrap">
-                          {/* Assignment and Status Controls */}
-                          {report.status !== 'approved' && report.status !== 'rejected' && (
-                            <>
-                              {/* For pending reports: Show dropdown + Assign button */}
-                              {report.status === 'pending' && (
-                                <>
-                                  <Select
+                          {/* Action Buttons Section */}
+                          <div className="border-t pt-4 mt-4 flex gap-3 flex-wrap">
+                            {/* Assignment and Status Controls */}
+                            {report.status !== 'approved' && report.status !== 'rejected' && (
+                              <>
+                                {/* For pending reports: Show dropdown + Assign button */}
+                                {report.status === 'pending' && (
+                                  <div className="flex gap-2 items-center bg-blue-50 p-3 rounded-lg border border-blue-200 flex-1">
+                                    <Select
                                     value={selectedTechnicians[report.id] || ""}
                                     onValueChange={(value) => setSelectedTechnicians(prev => ({
                                       ...prev,
                                       [report.id]: value
                                     }))}
                                   >
-                                    <SelectTrigger className="w-[200px]">
-                                      <SelectValue placeholder="Select technician" />
+                                    <SelectTrigger className="flex-1 bg-white border-blue-300 focus:ring-2 focus:ring-blue-500">
+                                      <SelectValue placeholder="👨‍🔧 Select technician" />
                                     </SelectTrigger>
                                     <SelectContent>
                                       {technicians.map((tech) => (
@@ -724,70 +747,54 @@ const PanchayatOfficerDashboard = () => {
                                       ))}
                                     </SelectContent>
                                   </Select>
-                                  
-                                  <Button 
-                                    size="sm"
-                                    onClick={() => {
-                                      if (selectedTechnicians[report.id]) {
-                                        assignTechnician(report.id, selectedTechnicians[report.id]);
-                                      }
-                                    }}
-                                    disabled={!selectedTechnicians[report.id]}
-                                    className="bg-blue-600 hover:bg-blue-700"
-                                  >
-                                    <UserPlus className="w-4 h-4 mr-1" />
-                                    Assign
-                                  </Button>
-                                </>
-                              )}
-                              
-                              {/* For assigned/in-progress reports: Show status dropdown */}
-                              {(report.status === 'assigned' || report.status === 'in_progress') && (
-                                <Select
-                                  value={report.status}
-                                  onValueChange={(value) => updateReportStatus(report.id, value)}
+                                    
+                                    <Button 
+                                      size="default"
+                                      onClick={() => {
+                                        if (selectedTechnicians[report.id]) {
+                                          assignTechnician(report.id, selectedTechnicians[report.id]);
+                                        }
+                                      }}
+                                      disabled={!selectedTechnicians[report.id]}
+                                      className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-md hover:shadow-lg transition-all"
+                                    >
+                                      <UserPlus className="w-4 h-4 mr-2" />
+                                      Assign Technician
+                                    </Button>
+                                  </div>
+                                )}
+                              </>
+                            )}
+                            
+                            {/* Show assignment status for assigned reports */}
+                            {report.status === 'assigned' && report.assigned_technician_id && (
+                              <div className="text-sm text-blue-600 bg-blue-50 px-3 py-2 rounded">
+                                ✓ Assigned to {report.technician_name} - Waiting for technician to accept
+                              </div>
+                            )}
+                            
+                            {/* Approval Controls */}
+                            {report.status === 'awaiting_approval' && (
+                              <div className="flex gap-2">
+                                <Button 
+                                  size="sm" 
+                                  onClick={() => approveReport(report.id)}
+                                  className="bg-green-600 hover:bg-green-700"
                                 >
-                                  <SelectTrigger className="w-[150px]">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="pending">Pending</SelectItem>
-                                    <SelectItem value="assigned">Assigned</SelectItem>
-                                    <SelectItem value="in_progress">In Progress</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              )}
-                            </>
-                          )}
-                          
-                          {/* Show assignment status for assigned reports */}
-                          {report.status === 'assigned' && report.assigned_technician_id && (
-                            <div className="text-sm text-blue-600 bg-blue-50 px-3 py-2 rounded">
-                              ✓ Assigned to {report.technician_name} - Waiting for technician to accept
-                            </div>
-                          )}
-                          
-                          {/* Approval Controls */}
-                          {report.status === 'awaiting_approval' && (
-                            <div className="flex gap-2">
-                              <Button 
-                                size="sm" 
-                                onClick={() => approveReport(report.id)}
-                                className="bg-green-600 hover:bg-green-700"
-                              >
-                                <CheckCircle2 className="w-4 h-4 mr-1" />
-                                Approve
-                              </Button>
-                              <Button 
-                                size="sm" 
-                                variant="destructive"
-                                onClick={() => setShowRejectionDialog(report.id)}
-                              >
-                                <AlertCircle className="w-4 h-4 mr-1" />
-                                Reject
-                              </Button>
-                            </div>
-                          )}
+                                  <CheckCircle2 className="w-4 h-4 mr-1" />
+                                  Approve
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="destructive"
+                                  onClick={() => setShowRejectionDialog(report.id)}
+                                >
+                                  <AlertCircle className="w-4 h-4 mr-1" />
+                                  Reject
+                                </Button>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     ))}
