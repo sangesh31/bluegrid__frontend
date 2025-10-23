@@ -72,8 +72,8 @@ const MapView = ({ latitude, longitude, address, userName, onClose }: MapViewPro
     <div 
       className="fixed inset-0 flex items-center justify-center p-2 sm:p-4" 
       style={{ 
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', 
-        zIndex: 999,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)', 
+        zIndex: 9999,
         top: 0,
         left: 0,
         right: 0,

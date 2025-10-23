@@ -132,3 +132,46 @@ export const updateUserProfile = async (userId: string, data: Partial<Profile>):
 
   return response.json();
 };
+
+// Send OTP for email verification
+export const sendOTP = async (email: string, fullName: string, phone?: string, address?: string): Promise<{ success: boolean; message: string; expiresIn: number }> => {
+  const response = await fetch(`${API_URL}/api/auth/send-otp`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email, fullName, phone, address }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to send OTP');
+  }
+
+  return response.json();
+};
+
+// Verify OTP and complete signup
+export const verifyOTPSignup = async (
+  email: string,
+  otp: string,
+  password: string,
+  fullName: string,
+  phone?: string,
+  address?: string
+): Promise<AuthSession> => {
+  const response = await fetch(`${API_URL}/api/auth/verify-otp-signup`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email, otp, password, fullName, phone, address }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'OTP verification failed');
+  }
+
+  return response.json();
+};

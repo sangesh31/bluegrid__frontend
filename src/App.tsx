@@ -13,6 +13,9 @@ import MaintenanceTechnicianDashboard from "./pages/MaintenanceTechnicianDashboa
 import WaterFlowControllerDashboard from "./pages/WaterFlowControllerDashboard";
 import NotFound from "./pages/NotFound";
 import AIChatbot from "./components/AIChatbot";
+import LanguageSwitcher from "./components/LanguageSwitcher";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 const queryClient = new QueryClient();
 
@@ -24,17 +27,24 @@ const App = () => (
           <Toaster />
           <Sonner />
           <AIChatbot />
+          <LanguageSwitcher />
           <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/resident" element={<ResidentDashboard />} />
-            <Route path="/panchayat-officer" element={<PanchayatOfficerDashboard />} />
-            <Route path="/pam/layout-officer" element={<PanchayatOfficerDashboard />} />
-            <Route path="/maintenance-technician" element={<MaintenanceTechnicianDashboard />} />
-            <Route path="/water-controller" element={<WaterFlowControllerDashboard />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <div className="flex-grow">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/resident" element={<ResidentDashboard />} />
+                <Route path="/panchayat-officer" element={<PanchayatOfficerDashboard />} />
+                <Route path="/pam/layout-officer" element={<PanchayatOfficerDashboard />} />
+                <Route path="/maintenance-technician" element={<MaintenanceTechnicianDashboard />} />
+                <Route path="/water-controller" element={<WaterFlowControllerDashboard />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </div>
+            <Footer />
+          </div>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>

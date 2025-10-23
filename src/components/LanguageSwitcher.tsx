@@ -12,13 +12,14 @@ const LanguageSwitcher = () => {
   const { language, setLanguage } = useLanguage();
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
-          <Globe className="w-4 h-4" />
-          <span className="font-semibold">{language === 'en' ? 'English' : 'தமிழ்'}</span>
-        </Button>
-      </DropdownMenuTrigger>
+    <div className="fixed top-4 right-4 z-40">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className="gap-2 bg-white shadow-lg hover:shadow-xl transition-shadow">
+            <Globe className="w-4 h-4" />
+            <span className="font-semibold">{language === 'en' ? 'English' : 'தமிழ்'}</span>
+          </Button>
+        </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40">
         <DropdownMenuItem
           onClick={() => setLanguage('en')}
@@ -36,6 +37,7 @@ const LanguageSwitcher = () => {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+    </div>
   );
 };
 

@@ -47,26 +47,26 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 215 25% 15%;
+    --background: 0 0% 100%;
+    --foreground: 210 11% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 15%;
+    --card-foreground: 210 11% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 15%;
+    --popover-foreground: 210 11% 15%;
 
-    --primary: 210 85% 35%;
+    --primary: 184 65% 25%;
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 185 75% 45%;
+    --secondary: 180 50% 50%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 95%;
-    --muted-foreground: 215 15% 50%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 15% 45%;
 
-    --accent: 185 65% 55%;
-    --accent-foreground: 215 25% 15%;
+    --accent: 180 35% 60%;
+    --accent-foreground: 210 11% 15%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
@@ -77,14 +77,14 @@ All colors MUST be HSL.
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --border: 210 30% 88%;
-    --input: 210 30% 88%;
-    --ring: 210 85% 35%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 184 65% 25%;
 
     --radius: 0.75rem;
     
-    --gradient-primary: linear-gradient(135deg, hsl(210 85% 35%), hsl(185 75% 45%));
-    --gradient-hero: linear-gradient(180deg, hsl(210 40% 98%) 0%, hsl(210 50% 92%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(184 65% 25%), hsl(180 50% 50%));
+    --gradient-hero: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 40% 98%) 100%);
     
     --shadow-soft: 0 2px 8px hsl(210 40% 70% / 0.12);
     --shadow-medium: 0 4px 16px hsl(210 40% 60% / 0.15);
@@ -154,11 +154,11 @@ All colors MUST be HSL.
 
 @layer components {
   .bg-gradient-hero {
-    background: linear-gradient(180deg, hsl(210 40% 98%) 0%, hsl(210 50% 92%) 100%);
+    background: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 40% 98%) 100%);
   }
   
   .bg-gradient-primary {
-    background: linear-gradient(135deg, hsl(210 85% 35%), hsl(185 75% 45%));
+    background: linear-gradient(135deg, hsl(184 65% 25%), hsl(180 50% 50%));
   }
   
   .shadow-soft {
@@ -184,7 +184,7 @@ All colors MUST be HSL.
   }
   
   .gradient-text {
-    background: linear-gradient(135deg, hsl(210 85% 35%), hsl(185 75% 45%));
+    background: linear-gradient(135deg, hsl(184 65% 25%), hsl(180 50% 50%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -194,8 +194,11 @@ All colors MUST be HSL.
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-smooth;
   }
   
+  /* Report Status Colors */
   .status-pending {
-    @apply bg-orange-100 text-orange-800 border border-orange-200;
+    background-color: #FEF3C7;
+    color: #92400E;
+    border: 1px solid #F59E0B;
   }
   
   .status-assigned {
@@ -203,23 +206,98 @@ All colors MUST be HSL.
   }
   
   .status-in-progress {
-    @apply bg-yellow-100 text-yellow-800 border border-yellow-200;
+    background-color: #FEF3C7;
+    color: #92400E;
+    border: 1px solid #F59E0B;
   }
   
   .status-completed {
-    @apply bg-green-100 text-green-800 border border-green-200;
+    background-color: #D1FAE5;
+    color: #065F46;
+    border: 1px solid #10B981;
   }
   
   .status-approved {
-    @apply bg-emerald-100 text-emerald-800 border border-emerald-200;
+    background-color: #DBEAFE;
+    color: #1E40AF;
+    border: 1px solid #3B82F6;
   }
   
   .status-rejected {
-    @apply bg-red-100 text-red-800 border border-red-200;
+    background-color: #FEE2E2;
+    color: #991B1B;
+    border: 1px solid #EF4444;
+  }
+  
+  /* Urgency Level Color Coding for Forms */
+  .urgency-low {
+    @apply bg-green-50 text-green-800 border border-green-200;
+  }
+  
+  .urgency-low-badge {
+    @apply bg-green-100 text-green-800 border border-green-300 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .urgency-medium {
+    @apply bg-amber-50 text-amber-800 border border-amber-200;
+  }
+  
+  .urgency-medium-badge {
+    @apply bg-amber-100 text-amber-800 border border-amber-300 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .urgency-high {
+    @apply bg-red-50 text-red-800 border border-red-200;
+  }
+  
+  .urgency-high-badge {
+    @apply bg-red-100 text-red-800 border border-red-300 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .urgency-emergency {
+    @apply bg-red-100 text-red-900 border-2 border-red-600;
+  }
+  
+  .urgency-emergency-badge {
+    @apply bg-red-600 text-white border border-red-700 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold shadow-md;
+  }
+  
+  /* Urgency Button Styles */
+  .btn-urgency-low {
+    @apply bg-[#10B981] hover:bg-green-600 text-white font-medium px-4 py-2 rounded-lg transition-smooth;
+  }
+  
+  .btn-urgency-medium {
+    @apply bg-[#F59E0B] hover:bg-amber-600 text-white font-medium px-4 py-2 rounded-lg transition-smooth;
+  }
+  
+  .btn-urgency-high {
+    @apply bg-[#EF4444] hover:bg-red-600 text-white font-medium px-4 py-2 rounded-lg transition-smooth;
+  }
+  
+  .btn-urgency-emergency {
+    @apply bg-[#DC2626] hover:bg-red-700 text-white font-bold px-4 py-2 rounded-lg transition-smooth shadow-lg animate-pulse-soft;
+  }
+  
+  /* Urgency Alert Boxes */
+  .alert-low {
+    @apply bg-green-50 border-l-4 border-green-500 text-green-800 p-4 rounded;
+  }
+  
+  .alert-medium {
+    @apply bg-amber-50 border-l-4 border-amber-500 text-amber-800 p-4 rounded;
+  }
+  
+  .alert-high {
+    @apply bg-red-50 border-l-4 border-red-500 text-red-800 p-4 rounded;
+  }
+  
+  .alert-emergency {
+    @apply bg-red-100 border-l-4 border-red-700 text-red-900 p-4 rounded shadow-md;
   }
   
   .btn-primary {
-    background: linear-gradient(135deg, hsl(210 85% 35%), hsl(185 75% 45%));
+    background: linear-gradient(135deg, hsl(184 65% 25%), hsl(180 50% 50%));
     @apply text-white font-medium px-4 py-2 rounded-lg transition-smooth hover:shadow-medium hover:scale-105 active:scale-95;
   }
   
@@ -235,14 +313,892 @@ All colors MUST be HSL.
     @apply dashboard-card hover:-translate-y-1 cursor-pointer;
   }
   
+  /* Vibrant Card Background Colors for Statistics */
+  .card-total-complaints {
+    background-color: #3B82F6;
+    @apply text-white rounded-xl shadow-lg p-6 transition-smooth hover:shadow-xl hover:-translate-y-1 cursor-pointer border-0;
+  }
+  
+  .card-pending {
+    background-color: #F59E0B;
+    @apply text-white rounded-xl shadow-lg p-6 transition-smooth hover:shadow-xl hover:-translate-y-1 cursor-pointer border-0;
+  }
+  
+  .card-completed {
+    background-color: #10B981;
+    @apply text-white rounded-xl shadow-lg p-6 transition-smooth hover:shadow-xl hover:-translate-y-1 cursor-pointer border-0;
+  }
+  
+  .card-approved {
+    background-color: #8B5CF6;
+    @apply text-white rounded-xl shadow-lg p-6 transition-smooth hover:shadow-xl hover:-translate-y-1 cursor-pointer border-0;
+  }
+  
+  .card-rejected {
+    background-color: #EF4444;
+    @apply text-white rounded-xl shadow-lg p-6 transition-smooth hover:shadow-xl hover:-translate-y-1 cursor-pointer border-0;
+  }
+  
+  .card-avg-resolution {
+    background-color: #6B7280;
+    @apply text-white rounded-xl shadow-lg p-6 transition-smooth hover:shadow-xl hover:-translate-y-1 cursor-pointer border-0;
+  }
+  
+  /* Simple background color only versions (no padding/styling) */
+  .bg-card-blue {
+    background-color: #3B82F6;
+  }
+  
+  .bg-card-amber {
+    background-color: #F59E0B;
+  }
+  
+  .bg-card-green {
+    background-color: #10B981;
+  }
+  
+  .bg-card-purple {
+    background-color: #8B5CF6;
+  }
+  
+  .bg-card-red {
+    background-color: #EF4444;
+  }
+  
+  .bg-card-gray {
+    background-color: #6B7280;
+  }
+  
+  /* Icon styles for vibrant cards */
+  .card-icon {
+    @apply w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-3;
+  }
+  
+  /* Number styles for vibrant cards */
+  .card-number {
+    @apply text-4xl font-bold mb-1;
+  }
+  
+  /* Label styles for vibrant cards */
+  .card-label {
+    @apply text-sm font-medium opacity-90;
+  }
+  
   .nav-tab {
     @apply px-4 py-2 rounded-lg font-medium transition-smooth hover:bg-gray-100 data-[state=active]:text-white;
   }
   
   .nav-tab[data-state="active"] {
-    background: linear-gradient(135deg, hsl(210 85% 35%), hsl(185 75% 45%));
+    background: linear-gradient(135deg, hsl(184 65% 25%), hsl(180 50% 50%));
   }
   
+  /* Schedule Card Design System */
+  .schedule-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 15px 0;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    border-left: 5px solid #007BFF;
+    transition: all 0.3s ease;
+  }
+  
+  .schedule-card:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+  }
+  
+  .schedule-card.on-schedule {
+    border-left-color: #10B981;
+  }
+  
+  .schedule-card.delayed {
+    border-left-color: #F59E0B;
+  }
+  
+  .schedule-card.not-started {
+    border-left-color: #6B7280;
+  }
+  
+  .schedule-card.completed {
+    border-left-color: #3B82F6;
+  }
+  
+  /* Schedule Status Badges */
+  .status-scheduled {
+    background: #EFF6FF;
+    color: #1D4ED8;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .status-delayed {
+    background: #FEF3C7;
+    color: #92400E;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .status-completed {
+    background: #ECFDF5;
+    color: #065F46;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .status-active {
+    background: #DBEAFE;
+    color: #1E40AF;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  /* Schedule Card Elements */
+  .schedule-address {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1F2937;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .schedule-location {
+    font-size: 14px;
+    color: #6B7280;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  
+  .schedule-time-section {
+    background: #F9FAFB;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 12px 0;
+  }
+  
+  .schedule-time-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  
+  .schedule-time-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1F2937;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .time-difference {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    margin-left: 8px;
+  }
+  
+  .time-difference.early {
+    background: #FEF3C7;
+    color: #92400E;
+  }
+  
+  .time-difference.late {
+    background: #FEE2E2;
+    color: #991B1B;
+  }
+  
+  .time-difference.on-time {
+    background: #D1FAE5;
+    color: #065F46;
+  }
+
+  /* Report Card Design System */
+  .report-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 15px 0;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    border-left: 4px solid #F59E0B;
+    transition: all 0.3s ease;
+  }
+  
+  .report-card:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+  }
+  
+  .report-card.status-pending {
+    border-left-color: #F59E0B;
+  }
+  
+  .report-card.status-assigned {
+    border-left-color: #3B82F6;
+  }
+  
+  .report-card.status-in-progress {
+    border-left-color: #8B5CF6;
+  }
+  
+  .report-card.status-completed {
+    border-left-color: #10B981;
+  }
+  
+  .report-card.status-approved {
+    border-left-color: #059669;
+  }
+  
+  .report-card.status-rejected {
+    border-left-color: #EF4444;
+  }
+  
+  .report-header {
+    border-bottom: 1px solid #E5E7EB;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .report-header h3 {
+    margin: 0 0 8px 0;
+    color: #1F2937;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .report-location {
+    color: #374151;
+    font-size: 14px;
+    margin: 5px 0;
+    line-height: 1.5;
+    display: flex;
+    align-items: start;
+    gap: 6px;
+  }
+  
+  .meta-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    font-size: 13px;
+    color: #6B7280;
+    margin: 10px 0;
+  }
+  
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .issue-description {
+    background: #F8F9FA;
+    padding: 12px;
+    border-radius: 8px;
+    border-left: 3px solid #007BFF;
+    font-style: italic;
+    margin: 15px 0;
+    color: #374151;
+    line-height: 1.5;
+  }
+  
+  .issue-description-label {
+    font-weight: 600;
+    color: #1F2937;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-style: normal;
+  }
+  
+  .media-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin: 15px 0;
+    align-items: center;
+  }
+  
+  .media-btn {
+    padding: 10px 15px;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    font-size: 13px;
+    color: #374151;
+  }
+  
+  .media-btn:hover {
+    background: #F3F4F6;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .coordinates {
+    font-size: 12px;
+    color: #6B7280;
+    font-family: monospace;
+    margin-top: 5px;
+  }
+  
+  .report-status-section {
+    background: #FFFBEB;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .report-status-section.status-pending {
+    background: #FFFBEB;
+  }
+  
+  .report-status-section.status-in-progress {
+    background: #EFF6FF;
+  }
+  
+  .report-status-section.status-completed {
+    background: #ECFDF5;
+  }
+  
+  .report-status-section.status-approved {
+    background: #ECFDF5;
+  }
+  
+  .report-status-section.status-rejected {
+    background: #FEF2F2;
+  }
+  
+  .report-status-badge {
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+  }
+  
+  .report-status-badge.pending {
+    background: #FEF3C7;
+    color: #92400E;
+    border: 1px solid #F59E0B;
+  }
+  
+  .report-status-badge.assigned {
+    background: #DBEAFE;
+    color: #1E40AF;
+    border: 1px solid #3B82F6;
+  }
+  
+  .report-status-badge.in-progress {
+    background: #E0E7FF;
+    color: #4338CA;
+    border: 1px solid #8B5CF6;
+  }
+  
+  .report-status-badge.completed {
+    background: #D1FAE5;
+    color: #065F46;
+    border: 1px solid #10B981;
+  }
+  
+  .report-status-badge.approved {
+    background: #D1FAE5;
+    color: #065F46;
+    border: 1px solid #059669;
+  }
+  
+  .report-status-badge.rejected {
+    background: #FEE2E2;
+    color: #991B1B;
+    border: 1px solid #EF4444;
+  }
+  
+  .status-message {
+    font-size: 12px;
+    color: #6B7280;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* User Management Cards (Residents, Technicians, Controllers) */
+  .user-card {
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 12px 0;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  
+  .user-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+    border-color: #D1D5DB;
+  }
+  
+  .user-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  
+  .user-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1F2937;
+    margin: 0 0 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .user-email {
+    font-size: 14px;
+    color: #6B7280;
+    margin: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .user-phone {
+    font-size: 14px;
+    color: #6B7280;
+    margin: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .user-address {
+    font-size: 13px;
+    color: #6B7280;
+    margin: 4px 0;
+    display: flex;
+    align-items: start;
+    gap: 6px;
+    line-height: 1.5;
+  }
+  
+  .user-meta {
+    font-size: 12px;
+    color: #9CA3AF;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #F3F4F6;
+  }
+  
+  .user-role-badge {
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .user-role-badge.resident {
+    background: #EFF6FF;
+    color: #1E40AF;
+    border: 1px solid #BFDBFE;
+  }
+  
+  .user-role-badge.technician {
+    background: #F0FDF4;
+    color: #166534;
+    border: 1px solid #BBF7D0;
+  }
+  
+  .user-role-badge.controller {
+    background: #FEF3C7;
+    color: #92400E;
+    border: 1px solid #FDE68A;
+  }
+  
+  .user-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  
+  .user-delete-btn {
+    padding: 6px 10px;
+    background: #FEE2E2;
+    color: #DC2626;
+    border: 1px solid #FECACA;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .user-delete-btn:hover {
+    background: #FEF2F2;
+    border-color: #FCA5A5;
+    transform: scale(1.05);
+  }
+  
+  /* Management Section Headers */
+  .management-header {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #E5E7EB;
+  }
+  
+  .management-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0 0 4px 0;
+  }
+  
+  .management-subtitle {
+    font-size: 14px;
+    color: #6B7280;
+    margin: 0;
+  }
+  
+  .add-user-btn {
+    padding: 10px 20px;
+    background: #0F766E;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(15, 118, 110, 0.2);
+  }
+  
+  .add-user-btn:hover {
+    background: #0D9488;
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);
+    transform: translateY(-1px);
+  }
+  
+  /* User List Container */
+  .user-list {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  
+  .user-list-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #9CA3AF;
+  }
+  
+  .user-list-empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  /* Dashboard Statistics Cards */
+  .stat-card-reports {
+    background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .stat-card-reports:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+  }
+  
+  .stat-card-users {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .stat-card-users:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+  }
+  
+  .stat-card-schedules {
+    background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .stat-card-schedules:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+  }
+  
+  .stat-card-tasks {
+    background: linear-gradient(135deg, #06B6D4 0%, #0891B2 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(6, 182, 212, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .stat-card-tasks:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(6, 182, 212, 0.4);
+  }
+  
+  .stat-card-icon {
+    width: 56px;
+    height: 56px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    backdrop-filter: blur(10px);
+  }
+  
+  .stat-card-value {
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  
+  .stat-card-label {
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0.95;
+    margin-bottom: 12px;
+  }
+  
+  .stat-card-trend {
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+  }
+  
+  .stat-card-trend.positive {
+    background: rgba(16, 185, 129, 0.3);
+  }
+  
+  .stat-card-trend.stable {
+    background: rgba(251, 191, 36, 0.3);
+  }
+
+  /* 3D Control Buttons */
+  .btn-3d-on {
+    position: relative;
+    background: linear-gradient(180deg, #9ACD32 0%, #7CB342 100%);
+    color: white;
+    font-weight: 700;
+    font-size: 18px;
+    padding: 20px 40px;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 
+      0 8px 0 #558B2F,
+      0 12px 20px rgba(0, 0, 0, 0.4),
+      inset 0 2px 4px rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.1s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  
+  .btn-3d-on:hover {
+    background: linear-gradient(180deg, #A8D84E 0%, #8BC34A 100%);
+    box-shadow: 
+      0 8px 0 #558B2F,
+      0 14px 24px rgba(0, 0, 0, 0.5),
+      inset 0 2px 4px rgba(255, 255, 255, 0.4);
+  }
+  
+  .btn-3d-on:active {
+    transform: translateY(4px);
+    box-shadow: 
+      0 4px 0 #558B2F,
+      0 6px 12px rgba(0, 0, 0, 0.3),
+      inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  }
+  
+  .btn-3d-on:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .btn-3d-off {
+    position: relative;
+    background: linear-gradient(180deg, #EF5350 0%, #E53935 100%);
+    color: white;
+    font-weight: 700;
+    font-size: 18px;
+    padding: 20px 40px;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 
+      0 8px 0 #B71C1C,
+      0 12px 20px rgba(0, 0, 0, 0.4),
+      inset 0 2px 4px rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.1s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  
+  .btn-3d-off:hover {
+    background: linear-gradient(180deg, #F44336 0%, #EF5350 100%);
+    box-shadow: 
+      0 8px 0 #B71C1C,
+      0 14px 24px rgba(0, 0, 0, 0.5),
+      inset 0 2px 4px rgba(255, 255, 255, 0.4);
+  }
+  
+  .btn-3d-off:active {
+    transform: translateY(4px);
+    box-shadow: 
+      0 4px 0 #B71C1C,
+      0 6px 12px rgba(0, 0, 0, 0.3),
+      inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  }
+  
+  .btn-3d-off:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .btn-3d-emergency {
+    position: relative;
+    background: linear-gradient(180deg, #FFA726 0%, #FB8C00 100%);
+    color: white;
+    font-weight: 700;
+    font-size: 18px;
+    padding: 20px 40px;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 
+      0 8px 0 #E65100,
+      0 12px 20px rgba(0, 0, 0, 0.4),
+      inset 0 2px 4px rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.1s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    animation: pulse-emergency 2s infinite;
+  }
+  
+  .btn-3d-emergency:hover {
+    background: linear-gradient(180deg, #FFB74D 0%, #FFA726 100%);
+    box-shadow: 
+      0 8px 0 #E65100,
+      0 14px 24px rgba(0, 0, 0, 0.5),
+      inset 0 2px 4px rgba(255, 255, 255, 0.4);
+  }
+  
+  .btn-3d-emergency:active {
+    transform: translateY(4px);
+    box-shadow: 
+      0 4px 0 #E65100,
+      0 6px 12px rgba(0, 0, 0, 0.3),
+      inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  }
+  
+  .btn-3d-emergency:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    animation: none;
+  }
+  
+  @keyframes pulse-emergency {
+    0%, 100% {
+      box-shadow: 
+        0 8px 0 #E65100,
+        0 12px 20px rgba(0, 0, 0, 0.4),
+        inset 0 2px 4px rgba(255, 255, 255, 0.3),
+        0 0 0 0 rgba(255, 167, 38, 0.7);
+    }
+    50% {
+      box-shadow: 
+        0 8px 0 #E65100,
+        0 12px 20px rgba(0, 0, 0, 0.4),
+        inset 0 2px 4px rgba(255, 255, 255, 0.3),
+        0 0 0 10px rgba(255, 167, 38, 0);
+    }
+  }
+
   /* Leaflet Map Fixes */
   .leaflet-container {
     height: 100% !important;

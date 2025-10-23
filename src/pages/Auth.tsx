@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Droplets } from "lucide-react";
+import { sendOTP, verifyOTPSignup } from "@/lib/api";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,6 +20,9 @@ const Auth = () => {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [showOtpInput, setShowOtpInput] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [otpTimer, setOtpTimer] = useState(0);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user, profile, signIn: authSignIn, signUp: authSignUp } = useAuth();
@@ -46,6 +50,14 @@ const Auth = () => {
     }
   }, [user, profile, navigate]);
 
+  // OTP timer countdown
+  useEffect(() => {
+    if (otpTimer > 0) {
+      const timer = setTimeout(() => setOtpTimer(otpTimer - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [otpTimer]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -71,35 +83,95 @@ const Auth = () => {
     }
   };
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-
-    // Validate password confirmation
-    if (signupPassword !== confirmPassword) {
+    
+    if (!fullName || !signupEmail || !phone || !address || !signupPassword || !confirmPassword) {
       toast({
-        title: "Password mismatch",
-        description: "Passwords do not match. Please try again.",
+        title: "Missing information",
+        description: "Please fill in all fields",
         variant: "destructive",
       });
-      setIsLoading(false);
       return;
     }
 
+    if (signupPassword !== confirmPassword) {
+      toast({
+        title: "Password mismatch",
+        description: "Passwords do not match",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
-      await authSignUp(signupEmail, signupPassword, fullName, phone, address);
-      
+      await sendOTP(signupEmail, fullName, phone, address);
+      setShowOtpInput(true);
+      setOtpTimer(600); // 10 minutes
+      toast({
+        title: "OTP Sent!",
+        description: "Please check your email for the verification code",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Failed to send OTP",
+        description: error.message || "Please try again",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!otp || otp.length !== 6) {
+      toast({
+        title: "Invalid OTP",
+        description: "Please enter the 6-digit OTP",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const session = await verifyOTPSignup(signupEmail, otp, signupPassword, fullName, phone, address);
+      localStorage.setItem('auth_token', session.token);
       toast({
         title: "Account created!",
-        description: "You have been logged in automatically.",
+        description: "Welcome to BlueGrid",
       });
-      
-      // Navigation will be handled by useEffect when user/profile updates
+      // Reload to trigger auth context
+      window.location.href = '/resident';
     } catch (error: any) {
-      console.error("Signup error:", error);
       toast({
-        title: "Signup failed",
-        description: error.message || "An error occurred during signup",
+        title: "Verification failed",
+        description: error.message || "Invalid OTP",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setIsLoading(true);
+    try {
+      await sendOTP(signupEmail, fullName, phone, address);
+      setOtpTimer(600);
+      toast({
+        title: "OTP Resent!",
+        description: "A new OTP has been sent to your email",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Failed to resend OTP",
+        description: error.message || "Please try again",
         variant: "destructive",
       });
     } finally {
@@ -156,76 +228,132 @@ const Auth = () => {
             </TabsContent>
             
             <TabsContent value="signup">
-              <form onSubmit={handleSignup} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-name">Full Name</Label>
-                  <Input
-                    id="signup-name"
-                    type="text"
-                    placeholder="John Doe"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
-                  <Input
-                    id="signup-email"
-                    type="email"
-                    placeholder="your@email.com"
-                    value={signupEmail}
-                    onChange={(e) => setSignupEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-phone">Mobile Number</Label>
-                  <Input
-                    id="signup-phone"
-                    type="tel"
-                    placeholder="+91 9876543210"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-address">Address</Label>
-                  <Input
-                    id="signup-address"
-                    type="text"
-                    placeholder="Your complete address"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    placeholder="Enter your password"
-                    value={signupPassword}
-                    onChange={(e) => setSignupPassword(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="confirm-password">Confirm Password</Label>
-                  <Input
-                    id="confirm-password"
-                    type="password"
-                    placeholder="Confirm your password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                  />
-                </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Creating account..." : "Sign Up"}
-                </Button>
+              <form onSubmit={showOtpInput ? handleVerifyOtp : handleSendOtp} className="space-y-4">
+                {!showOtpInput ? (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-name">Full Name</Label>
+                      <Input
+                        id="signup-name"
+                        type="text"
+                        placeholder="John Doe"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-email">Email</Label>
+                      <Input
+                        id="signup-email"
+                        type="email"
+                        placeholder="your@email.com"
+                        value={signupEmail}
+                        onChange={(e) => setSignupEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-phone">Mobile Number</Label>
+                      <Input
+                        id="signup-phone"
+                        type="tel"
+                        placeholder="+91 9876543210"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-address">Address</Label>
+                      <Input
+                        id="signup-address"
+                        type="text"
+                        placeholder="Your complete address"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-password">Password</Label>
+                      <Input
+                        id="signup-password"
+                        type="password"
+                        placeholder="Enter your password"
+                        value={signupPassword}
+                        onChange={(e) => setSignupPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="confirm-password">Confirm Password</Label>
+                      <Input
+                        id="confirm-password"
+                        type="password"
+                        placeholder="Confirm your password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading ? "Sending OTP..." : "Send OTP"}
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="otp">Enter OTP</Label>
+                      <Input
+                        id="otp"
+                        type="text"
+                        placeholder="Enter 6-digit OTP"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                        maxLength={6}
+                        required
+                        className="text-center text-2xl tracking-widest"
+                      />
+                      <p className="text-sm text-muted-foreground text-center">
+                        OTP sent to {signupEmail}
+                      </p>
+                      {otpTimer > 0 ? (
+                        <p className="text-sm text-center text-blue-600">
+                          Expires in {Math.floor(otpTimer / 60)}:{(otpTimer % 60).toString().padStart(2, '0')}
+                        </p>
+                      ) : (
+                        <p className="text-sm text-center text-red-600">
+                          OTP expired
+                        </p>
+                      )}
+                    </div>
+                    <Button type="submit" className="w-full" disabled={isLoading || otpTimer === 0}>
+                      {isLoading ? "Verifying..." : "Verify OTP"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      onClick={handleResendOtp}
+                      disabled={isLoading || otpTimer > 540}
+                    >
+                      Resend OTP
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="w-full"
+                      onClick={() => {
+                        setShowOtpInput(false);
+                        setOtp("");
+                        setOtpTimer(0);
+                      }}
+                    >
+                      Change Email
+                    </Button>
+                  </>
+                )}
               </form>
             </TabsContent>
           </Tabs>

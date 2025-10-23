@@ -5,13 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Droplets, LogOut, FileText, Clock, MapPin, Camera, Upload, X, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { Droplets, LogOut, FileText, Clock, MapPin, Camera, Upload, X, Loader2, CheckCircle2, AlertCircle, BarChart3 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import MapView from "@/components/MapView";
 import CameraCapture from "@/components/CameraCapture";
+import ReportsAnalytics from "@/components/ReportsAnalytics";
 import { API_URL } from "@/lib/api";
 
 interface PipeReport {
@@ -784,39 +785,55 @@ const ResidentDashboard = () => {
     <div className="min-h-screen bg-gradient-hero">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-primary flex items-center justify-center flex-shrink-0">
-              <Droplets className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+        <div className="bg-gradient-to-r from-teal-600 to-cyan-600 rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8 shadow-lg">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="relative">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg border border-white/30">
+                  <Droplets className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                </div>
+                <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-green-400 rounded-full border-2 border-white animate-pulse-soft"></div>
+              </div>
+              <div>
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white flex items-center gap-2">
+                  🏠 Resident Dashboard
+                </h1>
+                <p className="text-sm sm:text-base text-white/90">Welcome, {profile.full_name}</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">Resident Dashboard</h1>
-              <p className="text-xs sm:text-sm text-muted-foreground">Welcome, {profile.full_name}</p>
-            </div>
+            <Button 
+              variant="outline" 
+              onClick={handleSignOut} 
+              className="w-full sm:w-auto bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20 hover:text-white"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              <span>Sign Out</span>
+            </Button>
           </div>
-          <Button variant="outline" onClick={handleSignOut} className="w-full sm:w-auto">
-            <LogOut className="w-4 h-4 mr-2" />
-            <span className="sm:inline">Sign Out</span>
-          </Button>
         </div>
 
         {/* Main Content */}
-        <Tabs defaultValue="report" className="space-y-4 sm:space-y-6">
-          <TabsList className="grid w-full grid-cols-2 max-w-full sm:max-w-md">
-            <TabsTrigger value="report" className="text-xs sm:text-sm">
+        <Tabs defaultValue="complaints" className="space-y-4 sm:space-y-6">
+          <TabsList className="grid w-full grid-cols-3 max-w-full sm:max-w-2xl">
+            <TabsTrigger value="complaints" className="text-xs sm:text-sm">
               <FileText className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-              <span className="hidden xs:inline">Report Damage</span>
-              <span className="xs:hidden">Report</span>
+              <span className="hidden xs:inline">Complaints</span>
+              <span className="xs:hidden">Complaints</span>
             </TabsTrigger>
             <TabsTrigger value="schedule" className="text-xs sm:text-sm">
               <Clock className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
               <span className="hidden xs:inline">Water Schedule</span>
               <span className="xs:hidden">Schedule</span>
             </TabsTrigger>
+            <TabsTrigger value="reports" className="text-xs sm:text-sm">
+              <BarChart3 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              <span className="hidden xs:inline">Reports</span>
+              <span className="xs:hidden">Reports</span>
+            </TabsTrigger>
           </TabsList>
 
-          {/* Report Damage Tab */}
-          <TabsContent value="report" className="space-y-6">
+          {/* Complaints Tab (formerly Report Damage) */}
+          <TabsContent value="complaints" className="space-y-6">
             {/* Report Form */}
             <Card>
               <CardHeader>
@@ -1020,48 +1037,138 @@ const ResidentDashboard = () => {
                   </p>
                 ) : (
                   <div className="space-y-3 sm:space-y-4">
-                    {reports.map((report) => (
-                      <div key={report.id} className="border rounded-lg p-3 sm:p-4 space-y-2">
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
-                          <div className="flex-1">
-                            <p className="font-medium text-sm sm:text-base">{report.location_name || 'Location not available'}</p>
-                            <p className="text-xs sm:text-sm text-muted-foreground">
-                              Mobile: {report.mobile_number}
-                            </p>
-                            <p className="text-xs sm:text-sm text-muted-foreground">
-                              {new Date(report.created_at).toLocaleDateString('en-IN')}
-                            </p>
+                    {reports.map((report) => {
+                      // Format location address
+                      const formatLocation = (location: string) => {
+                        if (!location) return { main: 'Location not available', details: '' };
+                        const parts = location.split(',').map(p => p.trim());
+                        if (parts.length >= 3) {
+                          return {
+                            main: parts[0],
+                            details: parts.slice(1).join(', ')
+                          };
+                        }
+                        return { main: location, details: '' };
+                      };
+                      
+                      const location = formatLocation(report.location_name || '');
+                      
+                      // Get status class name
+                      const statusClass = report.status.replace('_', '-');
+                      
+                      // Get status message
+                      const getStatusMessage = (status: string) => {
+                        const messages: Record<string, string> = {
+                          'pending': '⏱️ Waiting for review',
+                          'assigned': '👷 Assigned to technician',
+                          'in_progress': '🔧 Work in progress',
+                          'completed': '✅ Work completed',
+                          'awaiting_approval': '📋 Awaiting approval',
+                          'approved': '✅ Approved and closed',
+                          'rejected': '❌ Report rejected'
+                        };
+                        return messages[status] || 'Processing';
+                      };
+                      
+                      return (
+                        <div key={report.id} className={`report-card status-${statusClass}`}>
+                          {/* Header Section */}
+                          <div className="report-header">
+                            <h3>🏢 {location.main}</h3>
+                            {location.details && (
+                              <div className="report-location">
+                                <span>📍</span>
+                                <span>{location.details}</span>
+                              </div>
+                            )}
                           </div>
-                          <div className="self-start">
-                            {getStatusBadge(report.status)}
+                          
+                          {/* Meta Information */}
+                          <div className="meta-info">
+                            <div className="meta-item">
+                              <span>📱</span>
+                              <span><strong>Mobile:</strong> {report.mobile_number}</span>
+                            </div>
+                            <div className="meta-item">
+                              <span>📅</span>
+                              <span><strong>Submitted:</strong> {new Date(report.created_at).toLocaleDateString('en-IN', { 
+                                day: 'numeric', 
+                                month: 'short', 
+                                year: 'numeric' 
+                              })}</span>
+                            </div>
+                          </div>
+                          
+                          {/* Issue Description */}
+                          {report.notes && (
+                            <div>
+                              <div className="issue-description-label">💧 Issue Description</div>
+                              <div className="issue-description">
+                                "{report.notes}"
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Media Section */}
+                          {(report.photo_url || (report.location_lat && report.location_lng)) && (
+                            <div>
+                              <div className="issue-description-label">🖼️ Evidence</div>
+                              <div className="media-section">
+                                {report.photo_url && (
+                                  <button
+                                    className="media-btn"
+                                    onClick={() => {
+                                      const imageUrl = report.photo_url!.startsWith('http') 
+                                        ? report.photo_url! 
+                                        : `${API_URL}${report.photo_url}`;
+                                      window.open(imageUrl, '_blank');
+                                    }}
+                                  >
+                                    <Camera className="w-4 h-4" />
+                                    📷 Damage Photo
+                                  </button>
+                                )}
+                                {report.location_lat && report.location_lng && (
+                                  <button
+                                    className="media-btn"
+                                    onClick={() => setSelectedLocation({
+                                      lat: report.location_lat!,
+                                      lng: report.location_lng!,
+                                      address: report.location_name || 'Reported location',
+                                      userName: report.full_name
+                                    })}
+                                  >
+                                    <MapPin className="w-4 h-4" />
+                                    📍 View on Map
+                                  </button>
+                                )}
+                              </div>
+                              {report.location_lat && report.location_lng && (
+                                <div className="coordinates">
+                                  Coordinates: {Number(report.location_lat).toFixed(4)}, {Number(report.location_lng).toFixed(4)}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          
+                          {/* Status Section */}
+                          <div className={`report-status-section status-${statusClass}`}>
+                            <span className={`report-status-badge ${statusClass}`}>
+                              {report.status === 'pending' && '🟡'}
+                              {report.status === 'assigned' && '🔵'}
+                              {report.status === 'in_progress' && '🟣'}
+                              {(report.status === 'completed' || report.status === 'approved') && '🟢'}
+                              {report.status === 'rejected' && '🔴'}
+                              {' '}
+                              {report.status.toUpperCase().replace('_', ' ')}
+                            </span>
+                            <span className="status-message">
+                              {getStatusMessage(report.status)}
+                            </span>
                           </div>
                         </div>
-                        {report.notes && (
-                          <p className="text-xs sm:text-sm text-muted-foreground">{report.notes}</p>
-                        )}
-                        {report.location_lat && report.location_lng && (
-                          <div className="mt-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setSelectedLocation({
-                                lat: report.location_lat!,
-                                lng: report.location_lng!,
-                                address: report.location_name || 'Reported location',
-                                userName: report.full_name
-                              })}
-                              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 w-full sm:w-auto text-xs sm:text-sm"
-                            >
-                              <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                              View Location on Map
-                            </Button>
-                            <p className="text-xs text-muted-foreground mt-1 ml-1">
-                              {Number(report.location_lat).toFixed(4)}, {Number(report.location_lng).toFixed(4)}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>
@@ -1089,48 +1196,147 @@ const ResidentDashboard = () => {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {schedules.map((schedule) => (
-                      <div key={schedule.id} className="border rounded-lg p-4">
-                        <div className="flex justify-between items-start mb-3">
-                          <div>
-                            <p className="font-medium text-lg">{schedule.area || 'Your Area'}</p>
-                            <p className="text-sm text-muted-foreground">
-                              Scheduled: {formatTime(schedule.scheduled_open_time)} - {formatTime(schedule.scheduled_close_time)}
-                            </p>
+                    {schedules.map((schedule) => {
+                      // Determine status and card class
+                      const getScheduleStatus = () => {
+                        if (schedule.actual_open_time && schedule.actual_close_time) return 'completed';
+                        if (schedule.is_active) return 'on-schedule';
+                        if (schedule.interrupted) return 'delayed';
+                        return 'not-started';
+                      };
+                      
+                      const scheduleStatus = getScheduleStatus();
+                      
+                      // Calculate time difference if opened
+                      const getTimeDifference = () => {
+                        if (!schedule.actual_open_time) return null;
+                        
+                        const scheduled = new Date(schedule.scheduled_open_time).getTime();
+                        const actual = new Date(schedule.actual_open_time).getTime();
+                        const diffMs = actual - scheduled;
+                        const diffMins = Math.abs(Math.floor(diffMs / 60000));
+                        const diffHours = Math.floor(diffMins / 60);
+                        const remainingMins = diffMins % 60;
+                        
+                        const timeStr = diffHours > 0 
+                          ? `${diffHours}h ${remainingMins}m` 
+                          : `${diffMins}m`;
+                        
+                        if (diffMs < -300000) return { text: `${timeStr} early`, type: 'early' }; // 5+ min early
+                        if (diffMs > 300000) return { text: `${timeStr} late`, type: 'late' }; // 5+ min late
+                        return { text: 'On time', type: 'on-time' };
+                      };
+                      
+                      const timeDiff = getTimeDifference();
+                      
+                      // Format address parts
+                      const formatAddress = (area: string) => {
+                        if (!area) return { main: 'Your Area', location: '' };
+                        const parts = area.split(',').map(p => p.trim());
+                        if (parts.length >= 2) {
+                          return {
+                            main: parts.slice(0, 2).join(', '),
+                            location: parts.slice(2).join(', ')
+                          };
+                        }
+                        return { main: area, location: '' };
+                      };
+                      
+                      const address = formatAddress(schedule.area);
+                      
+                      return (
+                        <div key={schedule.id} className={`schedule-card ${scheduleStatus}`}>
+                          {/* Address Section */}
+                          <div className="schedule-address">
+                            🏠 <span>{address.main || 'Your Area'}</span>
                           </div>
-                          {schedule.is_active ? (
-                            <Badge className="bg-green-100 text-green-800">
-                              <CheckCircle2 className="w-3 h-3 mr-1" />
-                              Active
-                            </Badge>
-                          ) : (
-                            <Badge variant="secondary">Scheduled</Badge>
+                          {address.location && (
+                            <div className="schedule-location">
+                              📍 {address.location}
+                            </div>
                           )}
-                        </div>
-
-                        {schedule.actual_open_time && (
-                          <p className="text-sm text-muted-foreground">
-                            Opened at: {formatTime(schedule.actual_open_time)}
-                          </p>
-                        )}
-
-                        {schedule.interrupted && (
-                          <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-md">
-                            <div className="flex items-start gap-2">
-                              <AlertCircle className="w-4 h-4 text-red-600 mt-0.5" />
-                              <div>
-                                <p className="text-sm font-medium text-red-800">Supply Interrupted</p>
-                                <p className="text-sm text-red-700">{schedule.interruption_reason}</p>
-                              </div>
+                          
+                          {/* Scheduled Time Section */}
+                          <div className="schedule-time-section">
+                            <div className="schedule-time-label">⏰ Scheduled Time</div>
+                            <div className="schedule-time-value">
+                              🕛 {formatTime(schedule.scheduled_open_time)} - {formatTime(schedule.scheduled_close_time)}
                             </div>
                           </div>
-                        )}
-                      </div>
-                    ))}
+                          
+                          {/* Actual Opening Time */}
+                          {schedule.actual_open_time && (
+                            <div className="schedule-time-section">
+                              <div className="schedule-time-label">✅ Actual Opening</div>
+                              <div className="schedule-time-value">
+                                🕡 {formatTime(schedule.actual_open_time)}
+                                {timeDiff && (
+                                  <span className={`time-difference ${timeDiff.type}`}>
+                                    {timeDiff.type === 'early' && '🟡'} 
+                                    {timeDiff.type === 'late' && '🔴'} 
+                                    {timeDiff.type === 'on-time' && '🟢'} 
+                                    {timeDiff.text}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Status Badge */}
+                          <div className="flex justify-between items-center mt-4">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-semibold text-gray-700">📊 Status:</span>
+                              {schedule.is_active && (
+                                <span className="status-active">
+                                  <CheckCircle2 className="w-3 h-3" />
+                                  Active
+                                </span>
+                              )}
+                              {!schedule.is_active && !schedule.actual_open_time && (
+                                <span className="status-scheduled">
+                                  <Clock className="w-3 h-3" />
+                                  Scheduled
+                                </span>
+                              )}
+                              {schedule.actual_open_time && schedule.actual_close_time && (
+                                <span className="status-completed">
+                                  <CheckCircle2 className="w-3 h-3" />
+                                  Completed 🟢
+                                </span>
+                              )}
+                              {schedule.interrupted && (
+                                <span className="status-delayed">
+                                  <AlertCircle className="w-3 h-3" />
+                                  Interrupted
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          
+                          {/* Interruption Alert */}
+                          {schedule.interrupted && (
+                            <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-md">
+                              <div className="flex items-start gap-2">
+                                <AlertCircle className="w-4 h-4 text-red-600 mt-0.5" />
+                                <div>
+                                  <p className="text-sm font-medium text-red-800">⚠️ Supply Interrupted</p>
+                                  <p className="text-sm text-red-700">{schedule.interruption_reason}</p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Reports & Analytics Tab */}
+          <TabsContent value="reports" className="space-y-6">
+            <ReportsAnalytics userRole="resident" userId={user?.id} />
           </TabsContent>
         </Tabs>
       </div>

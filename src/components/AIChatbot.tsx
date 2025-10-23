@@ -128,7 +128,6 @@ const AIChatbot = () => {
     setMessages((prev) => [...prev, userMessage]);
     setInputMessage('');
     setIsTyping(true);
-    setShowSuggestions(false); // Hide suggestions after first message
 
     // Simulate AI thinking time
     setTimeout(() => {
@@ -140,6 +139,11 @@ const AIChatbot = () => {
       };
       setMessages((prev) => [...prev, botResponse]);
       setIsTyping(false);
+      
+      // Show suggestions again after bot responds
+      setTimeout(() => {
+        setShowSuggestions(true);
+      }, 500);
     }, 800);
   };
 
@@ -330,9 +334,11 @@ const AIChatbot = () => {
             ))}
             
             {/* Suggested Questions */}
-            {showSuggestions && messages.length === 1 && (
+            {showSuggestions && (
               <div className="space-y-2 mt-4">
-                <p className="text-xs text-gray-500 font-semibold px-2">Quick questions you can ask:</p>
+                <p className="text-xs text-gray-500 font-semibold px-2">
+                  {messages.length === 1 ? 'Quick questions you can ask:' : 'You can also ask:'}
+                </p>
                 <div className="flex flex-col gap-2">
                   {suggestedQuestions.map((question, index) => (
                     <button

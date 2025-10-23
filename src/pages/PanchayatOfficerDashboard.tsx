@@ -9,9 +9,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Droplets, LogOut, FileText, Users, Clock, MapPin, Plus, Loader2, AlertCircle, CheckCircle2, Settings, Calendar, Shield, UserPlus } from "lucide-react";
+import { Droplets, LogOut, FileText, Users, Clock, MapPin, Plus, Loader2, AlertCircle, CheckCircle2, Settings, Calendar, Shield, UserPlus, Trash2, BarChart3, Camera } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MapView from "@/components/MapView";
+import ReportsAnalytics from "@/components/ReportsAnalytics";
 import { API_URL } from "@/lib/api";
 
 interface PipeReport {
@@ -80,6 +81,8 @@ const PanchayatOfficerDashboard = () => {
   const [rejectionReason, setRejectionReason] = useState('');
   const [showRejectionDialog, setShowRejectionDialog] = useState<string | null>(null);
   const [showCreateStaffDialog, setShowCreateStaffDialog] = useState<'maintenance_technician' | 'water_flow_controller' | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState<{ id: string; name: string; role: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [selectedTechnicians, setSelectedTechnicians] = useState<Record<string, string>>({});
   const [newStaff, setNewStaff] = useState({
     email: '',
@@ -433,6 +436,49 @@ const PanchayatOfficerDashboard = () => {
     }
   };
 
+  const deleteUser = async (userId: string) => {
+    setIsDeleting(true);
+    try {
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        toast({
+          title: "Authentication error",
+          description: "Please login again.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      const response = await fetch(`${API_URL}/api/users/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      
+      if (response.ok) {
+        toast({
+          title: "User deleted",
+          description: "The user has been removed successfully.",
+        });
+        setShowDeleteDialog(null);
+        fetchUsers(); // Refresh users
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to delete user');
+      }
+    } catch (error: any) {
+      console.error('Error deleting user:', error);
+      toast({
+        title: "Deletion failed",
+        description: error.message || "Unable to delete user. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       pending: { label: 'Pending', className: 'bg-yellow-100 text-yellow-800 border-yellow-300 border' },
@@ -471,96 +517,65 @@ const PanchayatOfficerDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-hero">
-      <div className="container mx-auto px-4 py-8">
-        {/* Enhanced Header */}
-        <div className="glass-effect rounded-2xl p-6 mb-8 animate-fade-in">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-medium">
-                  <Shield className="w-8 h-8 text-white" />
-                </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-pulse-soft"></div>
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold gradient-text font-display">Panchayat Officer</h1>
-                <p className="text-lg text-muted-foreground font-medium">Welcome back, {profile.full_name}</p>
-                <p className="text-sm text-muted-foreground">Managing water infrastructure efficiently</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="text-right">
-                <p className="text-sm text-muted-foreground">Last login</p>
-                <p className="text-sm font-medium">{new Date().toLocaleDateString()}</p>
-              </div>
-              <Button variant="outline" onClick={handleSignOut} className="btn-secondary">
-                <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
-              </Button>
-            </div>
+    <>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50">
+        <div className="container mx-auto px-4 py-8 max-w-7xl">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2">
+              Panchayat Officer Dashboard
+            </h1>
+            <p className="text-gray-600">Welcome back, {profile.full_name}</p>
           </div>
+          <Button onClick={signOut} variant="outline" className="gap-2">
+            <LogOut className="w-4 h-4" />
+            Sign Out
+          </Button>
         </div>
 
         {/* Enhanced Stats Cards */}
         <div className="grid gap-6 md:grid-cols-4 mb-8">
-          <div className="stats-card animate-slide-in" style={{animationDelay: '0.1s'}}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">Total Reports</p>
-                <p className="text-3xl font-bold text-blue-600 mb-1">{stats.totalReports}</p>
-                <p className="text-xs text-green-600 font-medium">↗ +12% this month</p>
-              </div>
-              <div className="p-3 bg-blue-100 rounded-xl">
-                <FileText className="w-8 h-8 text-blue-600" />
-              </div>
+          <div className="stat-card-reports animate-slide-in" style={{animationDelay: '0.1s'}}>
+            <div className="stat-card-icon">
+              <FileText className="w-8 h-8 text-white" />
             </div>
+            <div className="stat-card-value">{stats.totalReports}</div>
+            <div className="stat-card-label">Total Reports</div>
+            <div className="stat-card-trend positive">↗ +12% this month</div>
           </div>
-          <div className="stats-card animate-slide-in" style={{animationDelay: '0.2s'}}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">Total Users</p>
-                <p className="text-3xl font-bold text-green-600 mb-1">{stats.totalUsers}</p>
-                <p className="text-xs text-green-600 font-medium">↗ +8% this month</p>
-              </div>
-              <div className="p-3 bg-green-100 rounded-xl">
-                <Users className="w-8 h-8 text-green-600" />
-              </div>
+          <div className="stat-card-users animate-slide-in" style={{animationDelay: '0.2s'}}>
+            <div className="stat-card-icon">
+              <Users className="w-8 h-8 text-white" />
             </div>
+            <div className="stat-card-value">{stats.totalUsers}</div>
+            <div className="stat-card-label">Total Users</div>
+            <div className="stat-card-trend positive">↗ +14% this month</div>
           </div>
-          <div className="stats-card animate-slide-in" style={{animationDelay: '0.3s'}}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">Active Schedules</p>
-                <p className="text-3xl font-bold text-purple-600 mb-1">{stats.totalSchedules}</p>
-                <p className="text-xs text-purple-600 font-medium">→ Stable</p>
-              </div>
-              <div className="p-3 bg-purple-100 rounded-xl">
-                <Calendar className="w-8 h-8 text-purple-600" />
-              </div>
+          <div className="stat-card-schedules animate-slide-in" style={{animationDelay: '0.3s'}}>
+            <div className="stat-card-icon">
+              <Calendar className="w-8 h-8 text-white" />
             </div>
+            <div className="stat-card-value">{stats.totalSchedules}</div>
+            <div className="stat-card-label">Active Schedules</div>
+            <div className="stat-card-trend stable">→ Stable</div>
           </div>
-          <div className="stats-card animate-slide-in" style={{animationDelay: '0.4s'}}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">Completed Tasks</p>
-                <p className="text-3xl font-bold text-emerald-600 mb-1">{stats.completedTasks}</p>
-                <p className="text-xs text-emerald-600 font-medium">↗ +15% this week</p>
-              </div>
-              <div className="p-3 bg-emerald-100 rounded-xl">
-                <CheckCircle2 className="w-8 h-8 text-emerald-600" />
-              </div>
+          <div className="stat-card-tasks animate-slide-in" style={{animationDelay: '0.4s'}}>
+            <div className="stat-card-icon">
+              <CheckCircle2 className="w-8 h-8 text-white" />
             </div>
+            <div className="stat-card-value">{stats.completedTasks}</div>
+            <div className="stat-card-label">Completed Tasks</div>
+            <div className="stat-card-trend positive">↗ +15% this week</div>
           </div>
         </div>
 
         {/* Main Content Tabs */}
         <div className="glass-effect rounded-2xl p-2 mb-6">
-          <Tabs defaultValue="reports" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4 bg-transparent gap-2">
-              <TabsTrigger value="reports" className="nav-tab data-[state=active]:shadow-medium">
+          <Tabs defaultValue="complaints" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-5 bg-transparent gap-2">
+              <TabsTrigger value="complaints" className="nav-tab data-[state=active]:shadow-medium">
                 <FileText className="w-4 h-4 mr-2" />
-                Reports
+                Complaints
               </TabsTrigger>
               <TabsTrigger value="residents" className="nav-tab data-[state=active]:shadow-medium">
                 <Users className="w-4 h-4 mr-2" />
@@ -574,13 +589,17 @@ const PanchayatOfficerDashboard = () => {
                 <Droplets className="w-4 h-4 mr-2" />
                 Water Controllers
               </TabsTrigger>
+              <TabsTrigger value="reports" className="nav-tab data-[state=active]:shadow-medium">
+                <BarChart3 className="w-4 h-4 mr-2" />
+                Reports
+              </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="reports" className="space-y-6 animate-fade-in">
+            <TabsContent value="complaints" className="space-y-6 animate-fade-in">
               <div className="dashboard-card">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold font-display">Pipe Damage Reports</h2>
+                    <h2 className="text-2xl font-bold font-display">Pipe Damage Complaints</h2>
                     <p className="text-muted-foreground">Manage and assign repair tasks efficiently</p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -607,75 +626,121 @@ const PanchayatOfficerDashboard = () => {
                 ) : (
                   <div className="max-w-5xl mx-auto space-y-4">
                     {reports.map((report) => (
-                      <div key={report.id} className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
+                      <div key={report.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300">
                         {/* Header Section with Professional Background */}
-                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b-2 border-blue-200 px-6 py-4">
+                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-200 px-4 py-3">
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                              <div className="bg-gradient-to-br from-blue-500 to-indigo-500 w-14 h-14 rounded-xl flex items-center justify-center shadow-md">
-                                <span className="text-2xl font-bold text-white">{report.full_name.charAt(0).toUpperCase()}</span>
+                            <div className="flex items-center gap-3">
+                              <div className="bg-gradient-to-br from-blue-500 to-indigo-500 w-10 h-10 rounded-lg flex items-center justify-center shadow-md">
+                                <span className="text-lg font-bold text-white">{report.full_name.charAt(0).toUpperCase()}</span>
                               </div>
                               <div>
-                                <h3 className="text-xl font-bold text-gray-800">{report.full_name}</h3>
-                                <p className="text-gray-600 text-sm font-medium">Report ID: #{report.id.slice(0, 8)}</p>
+                                <h3 className="text-base font-bold text-gray-800">{report.full_name}</h3>
+                                <p className="text-gray-600 text-xs font-medium">Report ID: #{report.id.slice(0, 8)}</p>
                               </div>
                             </div>
                             <div className="flex items-center gap-3">
                               {getStatusBadge(report.status)}
                               {report.photo_url && (
-                                <img 
-                                  src={`${API_URL}${report.photo_url}`} 
-                                  alt="Damage" 
-                                  className="w-16 h-16 object-cover rounded-xl border-2 border-blue-300 shadow-sm cursor-pointer hover:scale-105 hover:shadow-md transition-all"
+                                <button
+                                  type="button"
                                   onClick={() => window.open(`${API_URL}${report.photo_url}`, '_blank')}
-                                />
+                                  className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1"
+                                >
+                                  📷 View Photo
+                                </button>
                               )}
                             </div>
                           </div>
                         </div>
 
                         {/* Content Section */}
-                        <div className="px-6 py-5 space-y-4">
+                        <div className="px-4 py-3 space-y-3">
+                          {/* Photo Thumbnail */}
+                          {report.photo_url && report.photo_url.trim() !== '' && (
+                            <div className="flex items-start gap-2 p-3 bg-gray-50 rounded-lg">
+                              <div className="bg-blue-100 p-1.5 rounded-lg">
+                                <Camera className="w-4 h-4 text-blue-600" />
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">📷 DAMAGE PHOTO</p>
+                                <div className="relative">
+                                  <img 
+                                    src={report.photo_url.startsWith('http') ? report.photo_url : `${API_URL}${report.photo_url}`}
+                                    alt="Pipe Damage" 
+                                    className="w-24 h-20 object-cover rounded-lg border border-gray-300 shadow-sm cursor-pointer hover:shadow-md hover:scale-105 transition-all"
+                                    onClick={() => {
+                                      const imageUrl = report.photo_url.startsWith('http') ? report.photo_url : `${API_URL}${report.photo_url}`;
+                                      window.open(imageUrl, '_blank');
+                                    }}
+                                    onError={(e) => {
+                                      console.error('Image failed to load:', report.photo_url);
+                                      const target = e.currentTarget;
+                                      target.style.display = 'none';
+                                      const placeholder = document.createElement('div');
+                                      placeholder.className = 'w-24 h-20 bg-gray-200 rounded-lg border border-gray-300 flex items-center justify-center text-xs text-gray-500';
+                                      placeholder.textContent = 'Image not available';
+                                      target.parentElement?.appendChild(placeholder);
+                                    }}
+                                  />
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1">Click to enlarge</p>
+                              </div>
+                            </div>
+                          )}
+                          
                           {/* Location */}
-                          <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl">
-                            <div className="bg-blue-100 p-2 rounded-lg">
-                              <MapPin className="w-5 h-5 text-blue-600" />
+                          <div className="flex items-start gap-2 p-3 bg-gray-50 rounded-lg">
+                            <div className="bg-blue-100 p-1.5 rounded-lg">
+                              <MapPin className="w-4 h-4 text-blue-600" />
                             </div>
                             <div className="flex-1">
-                              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Location</p>
-                              <p className="text-sm font-medium text-gray-800">{report.address}</p>
-                              {report.location_lat && report.location_lng && (
-                                <button
-                                  onClick={() => setSelectedLocation({
-                                    lat: report.location_lat!,
-                                    lng: report.location_lng!,
-                                    address: report.address,
-                                    userName: report.full_name
-                                  })}
-                                  className="text-xs text-blue-600 hover:text-blue-700 font-medium mt-1 flex items-center gap-1"
-                                >
-                                  <MapPin className="w-3 h-3" />
-                                  View on Map ({Number(report.location_lat).toFixed(4)}, {Number(report.location_lng).toFixed(4)})
-                                </button>
+                              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">📍 LOCATION</p>
+                              <p className="text-sm font-medium text-gray-800">{report.address || 'Location not specified'}</p>
+                              {report.location_lat && report.location_lng ? (
+                                <div className="mt-2 space-y-1">
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      setSelectedLocation({
+                                        lat: report.location_lat!,
+                                        lng: report.location_lng!,
+                                        address: report.address || 'Reported location',
+                                        userName: report.full_name
+                                      });
+                                    }}
+                                    className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm hover:shadow-md transition-all cursor-pointer"
+                                  >
+                                    <MapPin className="w-3 h-3" />
+                                    📍 View on Map
+                                  </button>
+                                  <p className="text-xs text-gray-500 font-mono">
+                                    Coordinates: {Number(report.location_lat).toFixed(4)}, {Number(report.location_lng).toFixed(4)}
+                                  </p>
+                                </div>
+                              ) : (
+                                <p className="text-xs text-gray-500 mt-1">No GPS coordinates available</p>
                               )}
                             </div>
                           </div>
                           {/* Issue Description */}
                           {report.notes && (
-                            <div className="p-4 bg-gradient-to-r from-amber-50 to-orange-50 border-l-4 border-amber-500 rounded-xl">
-                              <p className="text-xs font-bold text-amber-900 uppercase tracking-wide mb-2">Reported Issue</p>
-                              <p className="text-sm text-gray-700 leading-relaxed">{report.notes}</p>
+                            <div className="p-3 bg-gradient-to-r from-amber-50 to-orange-50 border-l-3 border-amber-500 rounded-lg">
+                              <p className="text-xs font-bold text-amber-900 uppercase tracking-wide mb-1">💧 REPORTED ISSUE</p>
+                              <p className="text-sm text-gray-700 leading-relaxed italic">"{report.notes}"</p>
                             </div>
                           )}
                           
                           {/* Technician Assignment Info */}
                           {report.assigned_technician_id && report.technician_name && (
-                            <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl border border-blue-200">
-                              <div className="bg-blue-100 p-2 rounded-lg">
-                                <UserPlus className="w-5 h-5 text-blue-600" />
+                            <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                              <div className="bg-blue-100 p-1.5 rounded-lg">
+                                <UserPlus className="w-4 h-4 text-blue-600" />
                               </div>
                               <div>
-                                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Assigned Technician</p>
+                                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">👷 ASSIGNED TECHNICIAN</p>
                                 <p className="text-sm font-bold text-blue-900">{report.technician_name}</p>
                               </div>
                             </div>
@@ -683,12 +748,12 @@ const PanchayatOfficerDashboard = () => {
                             
                             {/* Completion Notes */}
                             {report.completion_notes && (
-                              <div className="bg-blue-50 p-3 rounded border mb-2">
-                                <p className="text-sm font-medium text-blue-800">Completion Report:</p>
+                              <div className="bg-blue-50 p-2 rounded border mb-2">
+                                <p className="text-sm font-medium text-blue-800">✅ Completion Report:</p>
                                 <p className="text-sm text-blue-700">{report.completion_notes}</p>
                                 {report.completed_at && (
                                   <p className="text-xs text-blue-600 mt-1">
-                                    Completed on: {formatDate(report.completed_at)}
+                                    📅 Completed on: {formatDate(report.completed_at)}
                                   </p>
                                 )}
                               </div>
@@ -717,12 +782,12 @@ const PanchayatOfficerDashboard = () => {
                               </div>
                             )}
                             
-                          <p className="text-xs text-gray-400 mt-4">
-                            Submitted on {formatDate(report.created_at)}
+                          <p className="text-xs text-gray-400 mt-2">
+                            📅 Submitted on {formatDate(report.created_at)}
                           </p>
 
                           {/* Action Buttons Section */}
-                          <div className="border-t pt-4 mt-4 flex gap-3 flex-wrap">
+                          <div className="border-t pt-3 mt-3 flex gap-2 flex-wrap">
                             {/* Assignment and Status Controls */}
                             {report.status !== 'approved' && report.status !== 'rejected' && (
                               <>
@@ -823,28 +888,31 @@ const PanchayatOfficerDashboard = () => {
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="user-list">
                     {residents.map((resident) => (
-                      <div key={resident.id} className="border rounded-lg p-4">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <p className="font-medium">{resident.full_name}</p>
+                      <div key={resident.id} className="user-card">
+                        <div className="user-card-header">
+                          <div className="flex-1">
+                            <h3 className="user-name">👤 {resident.full_name}</h3>
                             {resident.email && (
-                              <p className="text-sm text-muted-foreground">{resident.email}</p>
+                              <p className="user-email">📧 {resident.email}</p>
                             )}
                             {resident.phone && (
-                              <p className="text-sm text-muted-foreground">{resident.phone}</p>
+                              <p className="user-phone">📱 {resident.phone}</p>
                             )}
                             {resident.address && (
-                              <p className="text-sm text-muted-foreground">{resident.address}</p>
+                              <p className="user-address">
+                                <span>📍</span>
+                                <span>{resident.address}</span>
+                              </p>
                             )}
-                            <p className="text-xs text-muted-foreground mt-1">
+                            <p className="user-meta">
                               Registered: {formatDate(resident.created_at)}
                             </p>
                           </div>
-                          <Badge variant="outline">
-                            Resident
-                          </Badge>
+                          <div className="user-actions">
+                            <span className="user-role-badge resident">Resident</span>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -882,28 +950,37 @@ const PanchayatOfficerDashboard = () => {
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="user-list">
                     {technicians.map((tech) => (
-                      <div key={tech.id} className="border rounded-lg p-4">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <p className="font-medium">{tech.full_name}</p>
+                      <div key={tech.id} className="user-card">
+                        <div className="user-card-header">
+                          <div className="flex-1">
+                            <h3 className="user-name">👷 {tech.full_name}</h3>
                             {tech.email && (
-                              <p className="text-sm text-muted-foreground">{tech.email}</p>
+                              <p className="user-email">📧 {tech.email}</p>
                             )}
                             {tech.phone && (
-                              <p className="text-sm text-muted-foreground">{tech.phone}</p>
+                              <p className="user-phone">📱 {tech.phone}</p>
                             )}
                             {tech.address && (
-                              <p className="text-sm text-muted-foreground">{tech.address}</p>
+                              <p className="user-address">
+                                <span>📍</span>
+                                <span>{tech.address}</span>
+                              </p>
                             )}
-                            <p className="text-xs text-muted-foreground mt-1">
+                            <p className="user-meta">
                               Created: {formatDate(tech.created_at)}
                             </p>
                           </div>
-                          <Badge className="bg-blue-100 text-blue-800">
-                            Technician
-                          </Badge>
+                          <div className="user-actions">
+                            <span className="user-role-badge technician">Technician</span>
+                            <button
+                              onClick={() => setShowDeleteDialog({ id: tech.id, name: tech.full_name, role: 'Maintenance Technician' })}
+                              className="user-delete-btn"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -941,28 +1018,37 @@ const PanchayatOfficerDashboard = () => {
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="user-list">
                     {waterControllers.map((controller) => (
-                      <div key={controller.id} className="border rounded-lg p-4">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <p className="font-medium">{controller.full_name}</p>
+                      <div key={controller.id} className="user-card">
+                        <div className="user-card-header">
+                          <div className="flex-1">
+                            <h3 className="user-name">💧 {controller.full_name}</h3>
                             {controller.email && (
-                              <p className="text-sm text-muted-foreground">{controller.email}</p>
+                              <p className="user-email">📧 {controller.email}</p>
                             )}
                             {controller.phone && (
-                              <p className="text-sm text-muted-foreground">{controller.phone}</p>
+                              <p className="user-phone">📱 {controller.phone}</p>
                             )}
                             {controller.address && (
-                              <p className="text-sm text-muted-foreground">{controller.address}</p>
+                              <p className="user-address">
+                                <span>📍</span>
+                                <span>{controller.address}</span>
+                              </p>
                             )}
-                            <p className="text-xs text-muted-foreground mt-1">
+                            <p className="user-meta">
                               Created: {formatDate(controller.created_at)}
                             </p>
                           </div>
-                          <Badge className="bg-cyan-100 text-cyan-800">
-                            Water Controller
-                          </Badge>
+                          <div className="user-actions">
+                            <span className="user-role-badge controller">Water Controller</span>
+                            <button
+                              onClick={() => setShowDeleteDialog({ id: controller.id, name: controller.full_name, role: 'Water Flow Controller' })}
+                              className="user-delete-btn"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -972,7 +1058,58 @@ const PanchayatOfficerDashboard = () => {
             </Card>
           </TabsContent>
 
+          {/* Reports & Analytics Tab */}
+          <TabsContent value="reports" className="space-y-6 animate-fade-in">
+            <ReportsAnalytics userRole="panchayat_officer" />
+          </TabsContent>
+
         </Tabs>
+        
+        {/* Delete Confirmation Dialog */}
+        {showDeleteDialog && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-red-100 rounded-full">
+                  <Trash2 className="w-6 h-6 text-red-600" />
+                </div>
+                <h3 className="text-lg font-semibold">Delete {showDeleteDialog.role}</h3>
+              </div>
+              <p className="text-sm text-muted-foreground mb-2">
+                Are you sure you want to delete <strong>{showDeleteDialog.name}</strong>?
+              </p>
+              <p className="text-sm text-red-600 mb-4">
+                This action cannot be undone. All associated data will be permanently removed.
+              </p>
+              <div className="flex gap-2 justify-end">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowDeleteDialog(null)}
+                  disabled={isDeleting}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  variant="destructive"
+                  onClick={() => deleteUser(showDeleteDialog.id)}
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* Rejection Dialog */}
         {showRejectionDialog && (
@@ -1100,19 +1237,27 @@ const PanchayatOfficerDashboard = () => {
           </div>
         )}
         
-        {/* Map View Dialog */}
-        {selectedLocation && (
-          <MapView
-            latitude={selectedLocation.lat}
-            longitude={selectedLocation.lng}
-            address={selectedLocation.address}
-            userName={selectedLocation.userName}
-            onClose={() => setSelectedLocation(null)}
-          />
-        )}
         </div>
       </div>
     </div>
+
+    {/* Map View Dialog - Outside main container for proper z-index */}
+    {selectedLocation && (
+      <>
+        {console.log('Rendering MapView with:', selectedLocation)}
+        <MapView
+          latitude={selectedLocation.lat}
+          longitude={selectedLocation.lng}
+          address={selectedLocation.address}
+          userName={selectedLocation.userName}
+          onClose={() => {
+            console.log('Closing map');
+            setSelectedLocation(null);
+          }}
+        />
+      </>
+    )}
+  </>
   );
 };
 
