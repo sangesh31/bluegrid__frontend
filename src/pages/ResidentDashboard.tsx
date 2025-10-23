@@ -23,7 +23,7 @@ interface PipeReport {
   location_lat: number | null;
   location_lng: number | null;
   photo_url: string | null;
-  status: 'pending' | 'assigned' | 'in_progress' | 'completed';
+  status: 'pending' | 'assigned' | 'in_progress' | 'completed' | 'awaiting_approval' | 'approved' | 'rejected';
   notes: string | null;
   created_at: string;
   updated_at: string;
@@ -112,6 +112,17 @@ const ResidentDashboard = () => {
       
       if (response.ok) {
         const data = await response.json();
+        console.log('Fetched reports:', data);
+        // Log photo URLs for debugging
+        if (Array.isArray(data)) {
+          data.forEach((report: any) => {
+            if (report.photo_url) {
+              console.log(`Report ${report.id} photo_url:`, report.photo_url);
+              const fullUrl = report.photo_url.startsWith('http') ? report.photo_url : `${API_URL}${report.photo_url}`;
+              console.log(`Full image URL:`, fullUrl);
+            }
+          });
+        }
         setReports(Array.isArray(data) ? data : []);
       } else {
         console.error('Failed to fetch reports:', response.status);
@@ -1116,11 +1127,47 @@ const ResidentDashboard = () => {
                               
                               {/* Photo Thumbnail */}
                               {report.photo_url && (
-                                <div className="mb-3">
+                                <div className="mb-3" style={{ minHeight: '200px' }}>
                                   <img 
                                     src={report.photo_url.startsWith('http') ? report.photo_url : `${API_URL}${report.photo_url}`}
                                     alt="Damage photo" 
-                                    className="w-full max-w-md h-48 object-cover rounded-lg border-2 border-gray-200 cursor-pointer hover:border-blue-400 transition-all"
+                                    style={{ 
+                                      width: '100%', 
+                                      maxWidth: '400px', 
+                                      height: '200px', 
+                                      objectFit: 'cover',
+                                      display: 'block',
+                                      borderRadius: '8px',
+                                      border: '2px solid #e5e7eb',
+                                      cursor: 'pointer'
+                                    }}
+                                    onLoad={(e) => {
+                                      console.log('✅ Image loaded successfully:', e.currentTarget.src);
+                                      e.currentTarget.style.border = '2px solid #10b981';
+                                    }}
+                                    onError={(e) => {
+                                      console.error('❌ Image failed to load:', report.photo_url);
+                                      console.error('Attempted URL:', e.currentTarget.src);
+                                      console.error('API_URL:', API_URL);
+                                      // Show error placeholder
+                                      const parent = e.currentTarget.parentElement;
+                                      if (parent) {
+                                        parent.innerHTML = `
+                                          <div style="width: 100%; max-width: 400px; height: 200px; display: flex; align-items: center; justify-content: center; background-color: #f3f4f6; border-radius: 8px; border: 2px solid #ef4444;">
+                                            <div style="text-align: center; padding: 16px;">
+                                              <p style="color: #dc2626; font-weight: 600; margin-bottom: 8px;">⚠️ Image failed to load</p>
+                                              <p style="font-size: 12px; color: #6b7280; word-break: break-all; margin-bottom: 8px;">${e.currentTarget.src}</p>
+                                              <button 
+                                                onclick="window.open('${e.currentTarget.src}', '_blank')" 
+                                                style="margin-top: 8px; padding: 6px 12px; background-color: #3b82f6; color: white; font-size: 12px; border-radius: 4px; border: none; cursor: pointer;"
+                                              >
+                                                Try opening in new tab
+                                              </button>
+                                            </div>
+                                          </div>
+                                        `;
+                                      }
+                                    }}
                                     onClick={() => {
                                       const imageUrl = report.photo_url!.startsWith('http') 
                                         ? report.photo_url! 

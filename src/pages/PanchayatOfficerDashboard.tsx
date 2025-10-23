@@ -668,13 +668,25 @@ const PanchayatOfficerDashboard = () => {
                                   <img 
                                     src={report.photo_url.startsWith('http') ? report.photo_url : `${API_URL}${report.photo_url}`}
                                     alt="Pipe Damage" 
-                                    className="w-24 h-20 object-cover rounded-lg border border-gray-300 shadow-sm cursor-pointer hover:shadow-md hover:scale-105 transition-all"
+                                    style={{
+                                      width: '96px',
+                                      height: '80px',
+                                      objectFit: 'cover',
+                                      borderRadius: '8px',
+                                      border: '1px solid #d1d5db',
+                                      cursor: 'pointer',
+                                      display: 'block'
+                                    }}
+                                    onLoad={(e) => {
+                                      console.log('✅ Image loaded:', e.currentTarget.src);
+                                      e.currentTarget.style.border = '2px solid #10b981';
+                                    }}
                                     onClick={() => {
                                       const imageUrl = report.photo_url.startsWith('http') ? report.photo_url : `${API_URL}${report.photo_url}`;
                                       window.open(imageUrl, '_blank');
                                     }}
                                     onError={(e) => {
-                                      console.error('Image failed to load:', report.photo_url);
+                                      console.error('❌ Image failed to load:', report.photo_url);
                                       const target = e.currentTarget;
                                       target.style.display = 'none';
                                       const placeholder = document.createElement('div');

@@ -441,7 +441,23 @@ const MaintenanceTechnicianDashboard = () => {
                               <img 
                                 src={report.photo_url.startsWith('http') ? report.photo_url : `${API_URL}${report.photo_url}`} 
                                 alt="Damage photo" 
-                                className="w-32 h-32 object-cover rounded-xl border-2 border-gray-200 cursor-pointer transition-all duration-300 group-hover/img:scale-105 group-hover/img:shadow-lg"
+                                style={{
+                                  width: '128px',
+                                  height: '128px',
+                                  objectFit: 'cover',
+                                  borderRadius: '12px',
+                                  border: '2px solid #e5e7eb',
+                                  cursor: 'pointer',
+                                  display: 'block'
+                                }}
+                                onLoad={(e) => {
+                                  console.log('✅ Image loaded:', e.currentTarget.src);
+                                  e.currentTarget.style.border = '2px solid #10b981';
+                                }}
+                                onError={(e) => {
+                                  console.error('❌ Image failed:', e.currentTarget.src);
+                                  e.currentTarget.style.display = 'none';
+                                }}
                                 onClick={() => setShowImageDialog(report.photo_url!)}
                               />
                               <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 rounded-xl transition-all duration-300 flex items-center justify-center">
@@ -568,7 +584,23 @@ const MaintenanceTechnicianDashboard = () => {
                             <img 
                               src={report.photo_url.startsWith('http') ? report.photo_url : `${API_URL}${report.photo_url}`} 
                               alt="Damage photo" 
-                              className="w-32 h-32 object-cover rounded-xl border-2 border-gray-200 cursor-pointer transition-all duration-300 group-hover/img:scale-105 group-hover/img:shadow-lg"
+                              style={{
+                                width: '128px',
+                                height: '128px',
+                                objectFit: 'cover',
+                                borderRadius: '12px',
+                                border: '2px solid #e5e7eb',
+                                cursor: 'pointer',
+                                display: 'block'
+                              }}
+                              onLoad={(e) => {
+                                console.log('✅ Image loaded:', e.currentTarget.src);
+                                e.currentTarget.style.border = '2px solid #10b981';
+                              }}
+                              onError={(e) => {
+                                console.error('❌ Image failed:', e.currentTarget.src);
+                                e.currentTarget.style.display = 'none';
+                              }}
                               onClick={() => setShowImageDialog(report.photo_url!)}
                             />
                             <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 rounded-xl transition-all duration-300 flex items-center justify-center">
@@ -709,7 +741,23 @@ const MaintenanceTechnicianDashboard = () => {
                             <img 
                               src={report.photo_url.startsWith('http') ? report.photo_url : `${API_URL}${report.photo_url}`} 
                               alt="Damage photo" 
-                              className="w-32 h-32 object-cover rounded-xl border-2 border-gray-200 cursor-pointer transition-all duration-300 group-hover/img:scale-105 group-hover/img:shadow-lg"
+                              style={{
+                                width: '128px',
+                                height: '128px',
+                                objectFit: 'cover',
+                                borderRadius: '12px',
+                                border: '2px solid #e5e7eb',
+                                cursor: 'pointer',
+                                display: 'block'
+                              }}
+                              onLoad={(e) => {
+                                console.log('✅ Image loaded:', e.currentTarget.src);
+                                e.currentTarget.style.border = '2px solid #10b981';
+                              }}
+                              onError={(e) => {
+                                console.error('❌ Image failed:', e.currentTarget.src);
+                                e.currentTarget.style.display = 'none';
+                              }}
                               onClick={() => setShowImageDialog(report.photo_url!)}
                             />
                             <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 rounded-xl transition-all duration-300 flex items-center justify-center">
