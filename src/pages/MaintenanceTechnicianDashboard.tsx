@@ -439,7 +439,7 @@ const MaintenanceTechnicianDashboard = () => {
                           <div className="flex-shrink-0">
                             <div className="relative group/img">
                               <img 
-                                src={`${API_URL}${report.photo_url}`} 
+                                src={report.photo_url.startsWith('http') ? report.photo_url : `${API_URL}${report.photo_url}`} 
                                 alt="Damage photo" 
                                 className="w-32 h-32 object-cover rounded-xl border-2 border-gray-200 cursor-pointer transition-all duration-300 group-hover/img:scale-105 group-hover/img:shadow-lg"
                                 onClick={() => setShowImageDialog(report.photo_url!)}
@@ -566,7 +566,7 @@ const MaintenanceTechnicianDashboard = () => {
                         <div className="flex-shrink-0">
                           <div className="relative group/img">
                             <img 
-                              src={`${API_URL}${report.photo_url}`} 
+                              src={report.photo_url.startsWith('http') ? report.photo_url : `${API_URL}${report.photo_url}`} 
                               alt="Damage photo" 
                               className="w-32 h-32 object-cover rounded-xl border-2 border-gray-200 cursor-pointer transition-all duration-300 group-hover/img:scale-105 group-hover/img:shadow-lg"
                               onClick={() => setShowImageDialog(report.photo_url!)}
@@ -707,7 +707,7 @@ const MaintenanceTechnicianDashboard = () => {
                         <div className="flex-shrink-0">
                           <div className="relative group/img">
                             <img 
-                              src={`${API_URL}${report.photo_url}`} 
+                              src={report.photo_url.startsWith('http') ? report.photo_url : `${API_URL}${report.photo_url}`} 
                               alt="Damage photo" 
                               className="w-32 h-32 object-cover rounded-xl border-2 border-gray-200 cursor-pointer transition-all duration-300 group-hover/img:scale-105 group-hover/img:shadow-lg"
                               onClick={() => setShowImageDialog(report.photo_url!)}

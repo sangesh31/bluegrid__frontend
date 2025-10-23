@@ -1113,6 +1113,24 @@ const ResidentDashboard = () => {
                           {(report.photo_url || (report.location_lat && report.location_lng)) && (
                             <div>
                               <div className="issue-description-label">🖼️ Evidence</div>
+                              
+                              {/* Photo Thumbnail */}
+                              {report.photo_url && (
+                                <div className="mb-3">
+                                  <img 
+                                    src={report.photo_url.startsWith('http') ? report.photo_url : `${API_URL}${report.photo_url}`}
+                                    alt="Damage photo" 
+                                    className="w-full max-w-md h-48 object-cover rounded-lg border-2 border-gray-200 cursor-pointer hover:border-blue-400 transition-all"
+                                    onClick={() => {
+                                      const imageUrl = report.photo_url!.startsWith('http') 
+                                        ? report.photo_url! 
+                                        : `${API_URL}${report.photo_url}`;
+                                      window.open(imageUrl, '_blank');
+                                    }}
+                                  />
+                                </div>
+                              )}
+                              
                               <div className="media-section">
                                 {report.photo_url && (
                                   <button
@@ -1125,7 +1143,7 @@ const ResidentDashboard = () => {
                                     }}
                                   >
                                     <Camera className="w-4 h-4" />
-                                    📷 Damage Photo
+                                    📷 View Full Photo
                                   </button>
                                 )}
                                 {report.location_lat && report.location_lng && (
