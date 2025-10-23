@@ -37,9 +37,12 @@ const App = () => (
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/resident" element={<ResidentDashboard />} />
                 <Route path="/panchayat-officer" element={<PanchayatOfficerDashboard />} />
+                <Route path="/panchayat_officer" element={<PanchayatOfficerDashboard />} />
                 <Route path="/pam/layout-officer" element={<PanchayatOfficerDashboard />} />
                 <Route path="/maintenance-technician" element={<MaintenanceTechnicianDashboard />} />
+                <Route path="/maintenance_technician" element={<MaintenanceTechnicianDashboard />} />
                 <Route path="/water-controller" element={<WaterFlowControllerDashboard />} />
+                <Route path="/water_controller" element={<WaterFlowControllerDashboard />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
